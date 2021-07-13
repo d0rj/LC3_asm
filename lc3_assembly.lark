@@ -1,0 +1,24 @@
+start: number instruction+
+
+instruction: INSTRUCTION_NAME arguments?
+
+arguments: argument
+			| argument ("," argument)+
+
+argument: REGISTER_NAME | number
+
+number: DEC_NUMBER -> decimal_number
+	| HEX_NUMBER -> hex_number
+	| BIN_NUMBER -> binary_number
+
+INSTRUCTION_NAME: "JMP"i|"ADD"i|"TRAP"i
+REGISTER_NAME: "R0"i|"R1"i|"R2"i
+
+HEX_NUMBER: "0x" HEXDIGIT+
+BIN_NUMBER: "0b" ("0"|"1")+
+
+%import common.INT -> DEC_NUMBER
+%import common.HEXDIGIT
+%import common.WS
+%import common.NEWLINE
+%ignore WS
