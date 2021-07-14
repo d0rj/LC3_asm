@@ -1,4 +1,4 @@
-start: ".ORIG"i number command+
+start: ".ORIG"i number command+ ".END"i
 
 command: label
 		|instruction
@@ -10,7 +10,9 @@ instruction.2: INSTRUCTION_NAME arguments?
 arguments: argument
 			| argument ("," argument)+
 
-argument: REGISTER_NAME | number
+argument: REGISTER_NAME -> register_name
+		| number 
+		| LABEL_NAME -> label_name
 
 number: DEC_NUMBER -> decimal_number
 	| HEX_NUMBER -> hex_number

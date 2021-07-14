@@ -15,8 +15,10 @@ HALT
 	jmp r5, 0x2
 	HALT
 add r0, r1, r5
-jmp r5
+jmp .someMetka
 halt
+
+.end
 """
 
 l = Lark(lc3_asm_grammar)
