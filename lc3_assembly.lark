@@ -1,6 +1,11 @@
-start: number instruction+
+start: ".ORIG"i number command+
 
-instruction: INSTRUCTION_NAME arguments?
+command: label
+		|instruction
+
+label.1: LABEL_NAME ":" (NEWLINE TAB instruction)+
+
+instruction.2: INSTRUCTION_NAME arguments?
 
 arguments: argument
 			| argument ("," argument)+
@@ -11,14 +16,19 @@ number: DEC_NUMBER -> decimal_number
 	| HEX_NUMBER -> hex_number
 	| BIN_NUMBER -> binary_number
 
-INSTRUCTION_NAME: "JMP"i|"ADD"i|"TRAP"i
-REGISTER_NAME: "R0"i|"R1"i|"R2"i
+
+LABEL_NAME: "."? WORD
+INSTRUCTION_NAME: "BR"i|"ADD"i|"LD"i|"ST"i|"JSR"i|"AND"i|"LDR"i|"STR"i|"RTI"i|"NOT"i|"LDI"i|"STI"i|"JMP"i|"RES"i|"LEA"i|"GETC"i|"OUT"i|"PUTS"i|"IN"i|"PUTSP"i|"HALT"i
+REGISTER_NAME: "R0"i|"R1"i|"R2"i|"R3"i|"R4"i|"R5"i|"R6"i|"R7"i|"PC"i|"COND"i
 
 HEX_NUMBER: "0x" HEXDIGIT+
 BIN_NUMBER: "0b" ("0"|"1")+
+
+TAB: "\t"
 
 %import common.INT -> DEC_NUMBER
 %import common.HEXDIGIT
 %import common.WS
 %import common.NEWLINE
+%import common.WORD
 %ignore WS

@@ -5,10 +5,18 @@ with open('./lc3_assembly.lark', 'r') as file:
 	lc3_asm_grammar = file.read()
 
 program = """
-0x3000
+.orig 0x3000
+
 ADD r0, 0xf125c, R0 
 jmp 0b1001101
-TRAP
+HALT
+
+.someMetka:
+	jmp r5, 0x2
+	HALT
+add r0, r1, r5
+jmp r5
+halt
 """
 
 l = Lark(lc3_asm_grammar)
