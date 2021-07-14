@@ -12,7 +12,9 @@ Simple asssembler for LC3 virtual machine. You can see my own realization of VM 
 - [x] All types of arguments for instruction
 - [x] Labels
 - [ ] Advanced label declaration
-- [ ] Meta assebler directives (like ***.STRINGZ***)
+- [x] Meta assebler directives (like ***.STRINGZ***)
+- [ ] Machine code generation
+- [ ] AST optimization of assembly code
 
 ### Dependencies
 
