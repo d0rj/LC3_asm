@@ -1,7 +1,7 @@
 from lark import Lark
 
 
-with open('./lc3_assembly.lark', 'r') as file:
+with open('./grammar/lc3_assembly.lark', 'r') as file:
 	lc3_asm_grammar = file.read()
 
 program = """

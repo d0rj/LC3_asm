@@ -20,7 +20,7 @@ number: DEC_NUMBER -> decimal_number
 
 
 LABEL_NAME: "."? WORD
-INSTRUCTION_NAME: "BR"i|"ADD"i|"LD"i|"ST"i|"JSR"i|"AND"i|"LDR"i|"STR"i|"RTI"i|"NOT"i|"LDI"i|"STI"i|"JMP"i|"RES"i|"LEA"i|"GETC"i|"OUT"i|"PUTS"i|"IN"i|"PUTSP"i|"HALT"i
+INSTRUCTION_NAME: "BR"i|"ADD"i|"LD"i|"ST"i|"JSR"i|"AND"i|"LDR"i|"STR"i|"RTI"i|"NOT"i|"LDI"i|"STI"i|"JMP"i|"RES"i|"LEA"i|"TRAP"i|"GETC"i|"OUT"i|"PUTS"i|"IN"i|"PUTSP"i|"HALT"i
 REGISTER_NAME: "R0"i|"R1"i|"R2"i|"R3"i|"R4"i|"R5"i|"R6"i|"R7"i|"PC"i|"COND"i
 
 HEX_NUMBER: "0x" HEXDIGIT+
