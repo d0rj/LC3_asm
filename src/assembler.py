@@ -2,6 +2,57 @@ from os import error
 from lark import Tree
 
 from typing import Dict, List, Tuple
+from enum import Enum
+
+
+class DictEnum(Enum):
+	def __getitem__(self, key: str):
+		return getattr(self.__class__, key.upper()).value
+
+
+class Operations(DictEnum):
+	BR, ADD, LD, ST, \
+	JSR, AND, LDR, STR, \
+	RTI, NOT, LDI, STI, \
+	JMP, RES, LEA, TRAP = range(16)
+	GETC = 0xf0 << 8 | 0x20,
+	OUT = 0xf0 << 8 | 0x21,
+	PUTS = 0xf0 << 8 | 0x22,
+	IN = 0xf0 << 8 | 0x23,
+	PUTSP = 0xf0 << 8 | 0x24,
+	HALT = 0xf0 << 8 | 0x25
+
+
+class Registers(DictEnum):
+	R0, R1, R2, R3, R4, R5, R6, R7, \
+	PC, COND = range(10)
+
+
+class EncodeOperation:
+	__slots__ = 'operations',
+
+
+	def __init__(self) -> None:
+		self._operations = Operations(Operations.ADD)
+
+	
+	def NOT(self, arguments: List[Dict]) -> int:
+		_required_argument_types(arguments, [REGISTER_NAME, REGISTER_NAME], 'not')
+
+		dst = int(_first_value(arguments[0]))
+		src = int(_first_value(arguments[1]))
+
+		result = int(self._operations['not']) << 12 | dst << 9 | src << 6 | 0b111111
+
+		return result
+
+
+	def ADD(self, arguments: List[Dict]) -> int:
+		pass
+
+
+	def __getitem__(self, name: str):
+		return getattr(EncodeOperation, name.upper())
 
 
 MEMORY_SIZE = 65535
@@ -162,7 +213,7 @@ def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
 		arguments = [_argument_tree_parse(arg_tree) for arg_tree in _get_arguments_tree(instruction)]
 		# replace labels with address
 		arguments = [
-			{ 'number': _labels[list(arg.values())[0]] } 
+			{ 'number': _labels[_first_value(arg)] } 
 				if _first_key(arg) == LABEL 
 				else arg 
 			for arg in arguments
@@ -174,10 +225,15 @@ def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
 
 
 def assemble(instructions: Dict[int, Dict[str, list]]):
-	global _labels, _memory
+	global _memory
+
+	operations = Operations(Operations.ADD)
+	registers = Registers(Registers.COND)
+	encode_operation = EncodeOperation()
 
 	for addr, instr in instructions.items():
 		print(f'{hex(addr)}: {instr}')
+		print(hex(operations[_first_key(instr)]))
 
 	print(_memory[0x3008])
 	for label, addr in _labels.items():
