@@ -29,18 +29,19 @@ class Registers(DictEnum):
 
 
 class EncodeOperation:
-	__slots__ = 'operations',
+	__slots__ = '_operations', '_registers'
 
 
 	def __init__(self) -> None:
 		self._operations = Operations(Operations.ADD)
+		self._registers = Registers(Registers.COND)
 
 	
 	def NOT(self, arguments: List[Dict]) -> int:
 		_required_argument_types(arguments, [REGISTER_NAME, REGISTER_NAME], 'not')
 
-		dst = int(_first_value(arguments[0]))
-		src = int(_first_value(arguments[1]))
+		dst = int(self._registers[_first_value(arguments[0])]) & 0b111
+		src = int(self._registers[_first_value(arguments[1])]) & 0b111
 
 		result = int(self._operations['not']) << 12 | dst << 9 | src << 6 | 0b111111
 
@@ -48,7 +49,31 @@ class EncodeOperation:
 
 
 	def ADD(self, arguments: List[Dict]) -> int:
-		pass
+		rule, message = _arguments_matched_any(
+			arguments, 
+			[
+				[REGISTER_NAME, REGISTER_NAME, REGISTER_NAME],
+				[REGISTER_NAME, REGISTER_NAME, NUMBER]
+			],
+			'add'
+		)
+			
+		if rule == 0:
+			dst = int(self._registers[_first_value(arguments[0])]) & 0b111
+			src1 = int(self._registers[_first_value(arguments[1])]) & 0b111
+			src2 = int(self._registers[_first_value(arguments[2])]) & 0b111
+
+			result = int(self._operations['add']) << 12 | dst << 9 | src1 << 6 | 0b000 << 3 | src2
+		elif rule == 1:
+			dst = int(self._registers[_first_value(arguments[0])]) & 0b111
+			src1 = int(self._registers[_first_value(arguments[1])]) & 0b111
+			imm5 = int(_first_value(arguments[2])) & 0b11111
+
+			result = int(self._operations['add']) << 12 | dst << 9 | src1 << 6 | 0b1 << 5 | imm5
+		else:
+			raise SyntaxError(message)
+
+		return result
 
 
 	def __getitem__(self, name: str):
