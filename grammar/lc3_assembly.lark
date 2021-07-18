@@ -4,9 +4,9 @@ command: label
 		|instruction
 		|pseudo_op
 
-label.1: LABEL_NAME ":" (NEWLINE TAB instruction)+
+label: LABEL_NAME ":"
 
-instruction.2: INSTRUCTION_NAME arguments?
+instruction: INSTRUCTION_NAME arguments?
 
 pseudo_op: PSEUDO_OP_NAME argument?
 
@@ -30,7 +30,7 @@ PSEUDO_OP_NAME: ".ORIG"i|".FILL"i|".BLKW"i|".STRINGZ"i
 HEX_NUMBER: "0x" HEXDIGIT+
 BIN_NUMBER: "0b" ("0"|"1")+
 
-TAB: "\t"
+TAB: "\t"|"    "
 
 %import common.INT -> DEC_NUMBER
 %import common.HEXDIGIT
