@@ -11,7 +11,7 @@ ADD r0, 0xf125c, R0
 jmp 0b1001101
 HALT
 
-.someMetka:
+.someMetka: ; some comment
 	jmp r5, 0x2
 	HALT
 add r0, r1, r5
