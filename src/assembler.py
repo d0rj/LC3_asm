@@ -1,7 +1,7 @@
 from os import error
 from lark import Tree
 
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 
 MEMORY_SIZE = 65535
@@ -82,14 +82,39 @@ def _argument_tree_parse(argument: Tree) -> dict:
 	return None
 
 
-def _required_argument_types(arguments: List[Tree], types: List[str] or List[List[str]], instr: str) -> bool:	
+def _argument_type_missmatch_message(instruction_name: str, required: str) -> str:
+	return f'''\'{instruction_name.upper()}\' instruction arguments must have types {required}.'''
+
+
+def _argument_count_missmatch_message(instruction_name: str, required: int, passed: int) -> str:
+	return f'\'{instruction_name.upper()}\' instruction must have {required} arguments, but {passed} was gived.'
+
+
+def _arguments_matched(arguments: List[Tree], types: List[str], instr: str) -> Tuple[bool, str]:
 	if len(arguments) != len(types):
-		raise SyntaxError(f'\'{instr.upper()}\' instruction must have {len(types)} arguments, but {len(arguments)} was given.')
+		return False, _argument_count_missmatch_message(instr, len(types), len(arguments))
 
 	all_matched = all([_argument_type(arg) == _type for arg, _type in zip(arguments, types)])
 
 	if not all_matched:
-		raise SyntaxError(f'''\'{instr.upper()}\' instruction arguments must have types {str(types).replace('[', '').replace(']', '')}.''')
+		return False, _argument_type_missmatch_message(instr, str(types).replace('[', '').replace(']', ''))
+
+	return True, str()
+
+
+def _arguments_matched_any(arguments: List[Tree], types: List[List[str]], instr: str) -> Tuple[int, str]:
+	for i, _types in enumerate(types):
+		matched, message = _arguments_matched(arguments, _types, instr)
+		if matched:
+			return i, str()
+	
+	return -1, message
+
+
+def _required_argument_types(arguments: List[Tree], types: List[str], instr: str):	
+	matched, message = _arguments_matched(arguments, types, instr)
+	if not matched:
+		raise SyntaxError(message)
 
 
 def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
@@ -112,10 +137,12 @@ def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
 		elif _is_orig_command(command):
 			arguments = _get_arguments_tree(command)
 			_required_argument_types(arguments, [NUMBER], ORIG)
+
 			current_address = _number_tree_to_int(arguments[0]) - 1
 		elif _is_fill_command(command):
 			arguments = _get_arguments_tree(command)
 			_required_argument_types(arguments, [NUMBER], FILL)
+
 			_memory[current_address] = _number_tree_to_int(arguments[0])
 		# TODO: stringz and blkw
 		#else:
@@ -124,7 +151,6 @@ def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
 		current_address += 1
 
 	result: Dict[int, Dict[str, list]] = dict()
-	# move AST to dict and replace labels with it's values
 	for addr, instruction in instructions.items():
 		name = _instruction_name(instruction)
 		arguments = [_argument_tree_parse(arg_tree) for arg_tree in _get_arguments_tree(instruction)]
