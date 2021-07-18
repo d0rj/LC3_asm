@@ -1,5 +1,7 @@
 from lark import Lark
 
+from src.assembler import assemble, preprocess, process
+
 
 with open('./grammar/lc3_assembly.lark', 'r') as file:
 	lc3_asm_grammar = file.read()
@@ -23,4 +25,6 @@ halt
 
 l = Lark(lc3_asm_grammar)
 
-print(l.parse(program).pretty())
+process(l.parse(program))
+
+# print(l.parse(program).pretty())
