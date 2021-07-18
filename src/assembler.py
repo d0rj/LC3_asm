@@ -93,12 +93,17 @@ def preprocess(tree: Tree):
 			if len(fill_arguments) != 1:
 				raise SyntaxError(f'\'.FILL\' instruction must have one argument, but {len(fill_arguments)} was given.')
 
-			_memory[current_address] = _number_tree_to_int(orig_arguments[0].children[0])
+			arg_type, arg = _argument_type(fill_arguments[0])
+			if arg_type != 'number':
+				raise SyntaxError(f'\'.FILL\' instruction argument must have type of number, but {arg_type} was given.')
+			_memory[current_address] = _number_tree_to_int(arg)
 		# TODO: stringz and blkw
+		#else:
+			#raise SyntaxError(f'Unknown command: {command.children[0]}.')
 		
 		current_address += 1
 
-	result: Dict[int, dict]
+	result: Dict[int, dict] = dict()
 	for addr, instruction in instructions.items(): # move AST to dict and replace labels with it's values
 		print(f'{hex(addr)} - {_get_arguments_tree(instruction)}')
 		pass

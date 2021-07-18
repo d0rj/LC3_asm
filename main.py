@@ -20,6 +20,10 @@ add r0, r1, r5
 jmp .someMetka
 halt
 
+.fill 0x5
+
+.STRINGZ "Hello world"
+
 .end
 """
 

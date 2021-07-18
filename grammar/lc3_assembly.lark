@@ -14,8 +14,9 @@ arguments: argument
 			| argument ("," argument)+
 
 argument: REGISTER_NAME -> register_name
-		| number -> number
+		| number
 		| LABEL_NAME -> label_name
+		| STRING_LITERAL -> string
 
 number: DEC_NUMBER
 	| HEX_NUMBER
@@ -29,6 +30,8 @@ PSEUDO_OP_NAME: ".ORIG"i|".FILL"i|".BLKW"i|".STRINGZ"i
 
 HEX_NUMBER: "0x" HEXDIGIT+
 BIN_NUMBER: "0b" ("0"|"1")+
+
+STRING_LITERAL: "\"" /[^\n]*/ "\""
 
 COMMENT: ";" /[^\n]*/ NEWLINE
 
