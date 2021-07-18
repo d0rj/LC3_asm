@@ -6,6 +6,7 @@ from typing import Dict, List
 
 MEMORY_SIZE = 65535
 
+NUMBER = 'number'
 HEX_NUMBER = 'hex_number'
 BIN_NUMBER = 'bin_number'
 DEC_NUMBER = 'dec_number'
@@ -16,6 +17,7 @@ FILL = '.fill'
 
 LABEL = 'label'
 INSTRUCTION = 'instruction'
+REGISTER_NAME = 'register_name'
 
 
 _labels: Dict[str, int] = dict()
@@ -40,12 +42,17 @@ def _is_fill_command(tree: Tree) -> bool:
 
 def _get_arguments_tree(tree: Tree) -> List[Tree]:
 	args = [arg.children for arg in tree.children if isinstance(arg, Tree) and arg.data == 'arguments']
-	return args[0] if len(args) > 0 else []
+	args = args[0] if len(args) > 0 else []
+	args = [arg.children[0] if arg.data == 'argument' else arg for arg in args]
+	return args
 
 
 def _argument_type(tree: Tree) -> tuple:
-	argument_type = tree.children[0].data
-	return argument_type, tree.children[0]
+	return tree.data
+
+
+def _instruction_name(tree: Tree) -> str:
+	return str(tree.children[0]).lower()
 
 
 def _number_tree_to_int(tree: Tree) -> int:
@@ -62,17 +69,31 @@ def _number_tree_to_int(tree: Tree) -> int:
 		raise ValueError('Not a number.')
 
 
-def preprocess(tree: Tree):
+def _argument_tree_parse(argument: Tree) -> dict:
+	arg_type = _argument_type(argument)
+
+	if arg_type == NUMBER:
+		return { NUMBER: _number_tree_to_int(argument) }
+	elif arg_type == REGISTER_NAME:
+		return { REGISTER_NAME: str(argument.children[0]) }
+	elif arg_type == LABEL:
+		return { LABEL: str(argument.children[0]) }
+
+	return None
+
+
+def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
 	global _labels, _memory
 	
 	current_address = 0
 
 	commands: List[Tree] = tree.children
-	commands = [c.children[0] for c in commands] # eat a 'command' ast node
+	# eat a 'command' ast node
+	commands = [c.children[0] for c in commands]
 
 	instructions: Dict[int, Tree] = dict()
 
-	for command in commands: # find all labels
+	for command in commands:
 		if command.data == INSTRUCTION:
 			instructions[current_address] = command
 		elif command.data == LABEL:
@@ -81,37 +102,55 @@ def preprocess(tree: Tree):
 		elif _is_orig_command(command):
 			orig_arguments = _get_arguments_tree(command)
 			if len(orig_arguments) != 1:
-				raise SyntaxError(f'\'.ORIG\' instruction must have one argument, but {len(orig_arguments)} was given.')
+				raise SyntaxError(f'\'{ORIG.upper()}\' instruction must have one argument, but {len(orig_arguments)} was given.')
 
-			arg_type, arg = _argument_type(orig_arguments[0])
-			if arg_type != 'number':
-				raise SyntaxError(f'\'.ORIG\' instruction argument must have type of number, but {arg_type} was given.')
+			arg_type = _argument_type(orig_arguments[0])
+			if arg_type != NUMBER:
+				raise SyntaxError(f'\'{ORIG.upper()}\' instruction argument must have type of number, but {arg_type} was given.')
 
-			current_address = _number_tree_to_int(arg) - 1
+			current_address = _number_tree_to_int(orig_arguments[0]) - 1
 		elif _is_fill_command(command):
 			fill_arguments = _get_arguments_tree(command)
 			if len(fill_arguments) != 1:
-				raise SyntaxError(f'\'.FILL\' instruction must have one argument, but {len(fill_arguments)} was given.')
+				raise SyntaxError(f'\'{FILL.upper()}\' instruction must have one argument, but {len(fill_arguments)} was given.')
 
-			arg_type, arg = _argument_type(fill_arguments[0])
-			if arg_type != 'number':
-				raise SyntaxError(f'\'.FILL\' instruction argument must have type of number, but {arg_type} was given.')
-			_memory[current_address] = _number_tree_to_int(arg)
+			arg_type = _argument_type(fill_arguments[0])
+			if arg_type != NUMBER:
+				raise SyntaxError(f'\'{FILL.upper()}\' instruction argument must have type of number, but {arg_type} was given.')
+			_memory[current_address] = _number_tree_to_int(fill_arguments[0])
 		# TODO: stringz and blkw
 		#else:
 			#raise SyntaxError(f'Unknown command: {command.children[0]}.')
-		
+
 		current_address += 1
 
-	result: Dict[int, dict] = dict()
-	for addr, instruction in instructions.items(): # move AST to dict and replace labels with it's values
-		print(f'{hex(addr)} - {_get_arguments_tree(instruction)}')
-		pass
+	result: Dict[int, Dict[str, list]] = dict()
+	# move AST to dict and replace labels with it's values
+	for addr, instruction in instructions.items():
+		name = _instruction_name(instruction)
+		arguments = [_argument_tree_parse(arg_tree) for arg_tree in _get_arguments_tree(instruction)]
+		# replace labels with address
+		arguments = [
+			{ 'number': _labels[list(arg.values())[0]] } 
+				if list(arg.keys())[0] == LABEL 
+				else arg 
+			for arg in arguments
+		]
+
+		result[addr] = { name: arguments }
+
+	return result
 
 
-def assemble(tree: Tree):
-	global _labels, _instructions, _memory
-	pass
+def assemble(instructions: Dict[int, Dict[str, list]]):
+	global _labels, _memory
+
+	for addr, instr in instructions.items():
+		print(f'{hex(addr)}: {instr}')
+
+	print(_memory[0x3008])
+	for label, addr in _labels.items():
+		print(f'{label}: {hex(addr)}')
 
 
 def process(tree: Tree) -> bytearray:
@@ -120,7 +159,7 @@ def process(tree: Tree) -> bytearray:
 	if tree.data != 'start':
 		raise ValueError('Unsupported tree format passed to function. Start node required.')
 
-	preprocess(tree)
-	assemble(tree)
+	instructions = preprocess(tree)
+	assemble(instructions)
 
 	return _memory

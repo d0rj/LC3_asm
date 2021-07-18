@@ -15,7 +15,7 @@ arguments: argument
 
 argument: REGISTER_NAME -> register_name
 		| number
-		| LABEL_NAME -> label_name
+		| LABEL_NAME -> label
 		| STRING_LITERAL -> string
 
 number: DEC_NUMBER
