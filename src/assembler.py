@@ -47,7 +47,7 @@ def _get_arguments_tree(tree: Tree) -> List[Tree]:
 	return args
 
 
-def _argument_type(tree: Tree) -> tuple:
+def _argument_type(tree: Tree) -> str:
 	return tree.data
 
 
@@ -82,6 +82,16 @@ def _argument_tree_parse(argument: Tree) -> dict:
 	return None
 
 
+def _required_argument_types(arguments: List[Tree], types: List[str] or List[List[str]], instr: str) -> bool:	
+	if len(arguments) != len(types):
+		raise SyntaxError(f'\'{instr.upper()}\' instruction must have {len(types)} arguments, but {len(arguments)} was given.')
+
+	all_matched = all([_argument_type(arg) == _type for arg, _type in zip(arguments, types)])
+
+	if not all_matched:
+		raise SyntaxError(f'''\'{instr.upper()}\' instruction arguments must have types {str(types).replace('[', '').replace(']', '')}.''')
+
+
 def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
 	global _labels, _memory
 	
@@ -100,24 +110,13 @@ def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
 			_labels[_extract_label_name(command)] = current_address
 			current_address -= 1
 		elif _is_orig_command(command):
-			orig_arguments = _get_arguments_tree(command)
-			if len(orig_arguments) != 1:
-				raise SyntaxError(f'\'{ORIG.upper()}\' instruction must have one argument, but {len(orig_arguments)} was given.')
-
-			arg_type = _argument_type(orig_arguments[0])
-			if arg_type != NUMBER:
-				raise SyntaxError(f'\'{ORIG.upper()}\' instruction argument must have type of number, but {arg_type} was given.')
-
-			current_address = _number_tree_to_int(orig_arguments[0]) - 1
+			arguments = _get_arguments_tree(command)
+			_required_argument_types(arguments, [NUMBER], ORIG)
+			current_address = _number_tree_to_int(arguments[0]) - 1
 		elif _is_fill_command(command):
-			fill_arguments = _get_arguments_tree(command)
-			if len(fill_arguments) != 1:
-				raise SyntaxError(f'\'{FILL.upper()}\' instruction must have one argument, but {len(fill_arguments)} was given.')
-
-			arg_type = _argument_type(fill_arguments[0])
-			if arg_type != NUMBER:
-				raise SyntaxError(f'\'{FILL.upper()}\' instruction argument must have type of number, but {arg_type} was given.')
-			_memory[current_address] = _number_tree_to_int(fill_arguments[0])
+			arguments = _get_arguments_tree(command)
+			_required_argument_types(arguments, [NUMBER], FILL)
+			_memory[current_address] = _number_tree_to_int(arguments[0])
 		# TODO: stringz and blkw
 		#else:
 			#raise SyntaxError(f'Unknown command: {command.children[0]}.')
