@@ -8,18 +8,18 @@ label: LABEL_NAME ":"
 
 instruction: INSTRUCTION_NAME arguments?
 
-pseudo_op: PSEUDO_OP_NAME argument?
+pseudo_op: PSEUDO_OP_NAME arguments?
 
 arguments: argument
 			| argument ("," argument)+
 
 argument: REGISTER_NAME -> register_name
-		| number 
+		| number -> number
 		| LABEL_NAME -> label_name
 
-number: DEC_NUMBER -> decimal_number
-	| HEX_NUMBER -> hex_number
-	| BIN_NUMBER -> binary_number
+number: DEC_NUMBER
+	| HEX_NUMBER
+	| BIN_NUMBER
 
 
 LABEL_NAME: "."? WORD
