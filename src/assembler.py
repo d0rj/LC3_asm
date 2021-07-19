@@ -151,12 +151,12 @@ def _number_tree_to_int(tree: Tree) -> int:
 
 	if number_type == HEX_NUMBER:
 		return int(number_str, 16)
-	elif number_type == BIN_NUMBER:
+	if number_type == BIN_NUMBER:
 		return int(number_str, 2)
-	elif number_type == DEC_NUMBER:
+	if number_type == DEC_NUMBER:
 		return int(number_str)
-	else:
-		raise ValueError('Not a number.')
+
+	raise ValueError('Not a number.')
 
 
 def _argument_tree_parse(argument: Tree) -> dict:
@@ -164,11 +164,11 @@ def _argument_tree_parse(argument: Tree) -> dict:
 
 	if arg_type == NUMBER:
 		return { NUMBER: _number_tree_to_int(argument) }
-	elif arg_type == REGISTER_NAME:
+	if arg_type == REGISTER_NAME:
 		return { REGISTER_NAME: str(argument.children[0]) }
-	elif arg_type == LABEL:
+	if arg_type == LABEL:
 		return { LABEL: str(argument.children[0]) }
-	elif arg_type == STRING:
+	if arg_type == STRING:
 		return { STRING: str(argument.children[0]) }
 
 	return None
