@@ -1,6 +1,6 @@
 from lark import Lark
 
-from src.assembler import assemble, preprocess, process
+from src.assembler import process
 
 
 with open('./grammar/lc3_assembly.lark', 'r') as file:
@@ -9,15 +9,15 @@ with open('./grammar/lc3_assembly.lark', 'r') as file:
 program = """
 .orig 0x3000
 
-ADD r0, 0xf125c, R0 
-jmp 0b1001101
+ADD r0, r5, R0 
+jmp r2
 HALT
 
 .someMetka: ; some comment
-	jmp r5, 0x2
+	jmp r5
 	HALT
 add r0, r1, r5
-jmp .someMetka
+jmp r2
 halt
 
 .fill 0x5

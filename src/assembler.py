@@ -1,4 +1,3 @@
-from os import error
 from lark import Tree
 
 from typing import Dict, List, Tuple
@@ -21,6 +20,13 @@ class Operations(DictEnum):
 	IN = 0xf0 << 8 | 0x23
 	PUTSP = 0xf0 << 8 | 0x24
 	HALT = 0xf0 << 8 | 0x25
+	BRN = 0b0000_100
+	BRZ = 0b0000_010
+	BRP = 0b0000_001
+	BRNZ = BRN | BRZ
+	BRNP = BRN | BRP
+	BRZP = BRZ | BRP
+	BRZNP = BRN | BRZ | BRP
 
 
 class Registers(DictEnum):
@@ -36,7 +42,7 @@ class EncodeOperation:
 		self._operations = Operations(Operations.ADD)
 		self._registers = Registers(Registers.COND)
 
-	
+
 	def NOT(self, arguments: List[Dict]) -> int:
 		_required_argument_types(arguments, [REGISTER_NAME, REGISTER_NAME], 'not')
 
@@ -44,40 +50,185 @@ class EncodeOperation:
 		src = int(self._registers[_first_value(arguments[1])]) & 0b111
 
 		result = int(self._operations['not']) << 12 | dst << 9 | src << 6 | 0b111111
-
 		return result
 
 
-	def ADD(self, arguments: List[Dict]) -> int:
+	def _and_add_base(self, arguments: List[Dict], op_name: str) -> int:
 		rule, message = _arguments_matched_any(
 			arguments, 
 			[
 				[REGISTER_NAME, REGISTER_NAME, REGISTER_NAME],
 				[REGISTER_NAME, REGISTER_NAME, NUMBER]
 			],
-			'add'
+			op_name
 		)
-			
+
 		if rule == 0:
 			dst = int(self._registers[_first_value(arguments[0])]) & 0b111
 			src1 = int(self._registers[_first_value(arguments[1])]) & 0b111
 			src2 = int(self._registers[_first_value(arguments[2])]) & 0b111
 
-			result = int(self._operations['add']) << 12 | dst << 9 | src1 << 6 | 0b000 << 3 | src2
+			result = int(self._operations[op_name]) << 12 | dst << 9 | src1 << 6 | 0b000 << 3 | src2
 		elif rule == 1:
 			dst = int(self._registers[_first_value(arguments[0])]) & 0b111
 			src1 = int(self._registers[_first_value(arguments[1])]) & 0b111
 			imm5 = int(_first_value(arguments[2])) & 0b11111
 
-			result = int(self._operations['add']) << 12 | dst << 9 | src1 << 6 | 0b1 << 5 | imm5
+			result = int(self._operations[op_name]) << 12 | dst << 9 | src1 << 6 | 0b1 << 5 | imm5
 		else:
 			raise SyntaxError(message)
 
 		return result
 
 
+	def _register_pcoffset9_base(self, arguments: List[Dict], op_name: str) -> int:
+		_required_argument_types(arguments, [REGISTER_NAME, NUMBER], op_name)
+
+		dst = int(self._registers[_first_value(arguments[0])]) & 0b111
+		pc_offset = int(_first_value(arguments[1])) & 0xf
+
+		result = int(self._operations[op_name]) << 12 | dst << 9 | pc_offset
+		return result
+
+
+	def _register_base_offset_base(self, arguments: List[Dict], op_name: str) -> int:
+		_required_argument_types(arguments, [REGISTER_NAME, REGISTER_NAME, NUMBER], op_name)
+
+		dst = int(self._registers[_first_value(arguments[0])]) & 0b111
+		base = int(self._registers[_first_value(arguments[1])]) & 0b111
+		offset6 = int(_first_value(arguments[2])) & 0b111111
+
+		result = int(self._operations[op_name]) << 12 | dst << 9 | base << 6 | offset6
+		return result
+
+
+	def _base_BR(self, arguments: List[Dict], op_name: str) -> int:
+		_required_argument_types(arguments, [NUMBER], op_name)
+
+		pc_offset9 = int(_first_value(arguments[0])) & 0x1ff
+
+		result = int(self._operations[op_name]) << 9 | pc_offset9
+		return result
+
+
+	def _trap_subops_base(self, arguments: List[Dict], op_name: str) -> int:
+		_required_argument_types(arguments, [], op_name)
+
+		return self._operations[op_name]
+
+
+	def ADD(self, arguments: List[Dict]) -> int:
+		return self._and_add_base(arguments, 'add')
+
+
+	def AND(self, arguments: List[Dict]) -> int:
+		return self._and_add_base(arguments, 'and')
+
+
+	def LD(self, arguments: List[Dict]) -> int:
+		return self._register_pcoffset9_base(arguments, 'ld')
+
+
+	def ST(self, arguments: List[Dict]) -> int:
+		return self._register_pcoffset9_base(arguments, 'st')
+
+
+	def LDI(self, arguments: List[Dict]) -> int:
+		return self._register_pcoffset9_base(arguments, 'ldi')
+
+
+	def STI(self, arguments: List[Dict]) -> int:
+		return self._register_pcoffset9_base(arguments, 'sti')
+
+
+	def LDR(self, arguments: List[Dict]) -> int:
+		return self._register_base_offset_base(arguments, 'ldr')
+
+
+	def STR(self, arguments: List[Dict]) -> int:
+		return self._register_base_offset_base(arguments, 'str')
+
+
+	def LEA(self, arguments: List[Dict]) -> int:
+		return self._register_pcoffset9_base(arguments, 'lea')
+
+
+	def BR(self, arguments: List[Dict]) -> int:
+		return self._base_BR(arguments, 'br')
+
+
+	def BRN(self, arguments: List[Dict]) -> int:
+		return self._base_BR(arguments, 'brn')
+
+
+	def BRZ(self, arguments: List[Dict]) -> int:
+		return self._base_BR(arguments, 'brz')
+
+
+	def BRP(self, arguments: List[Dict]) -> int:
+		return self._base_BR(arguments, 'brp')
+
+
+	def BRNZ(self, arguments: List[Dict]) -> int:
+		return self._base_BR(arguments, 'brnz')
+
+
+	def BRNP(self, arguments: List[Dict]) -> int:
+		return self._base_BR(arguments, 'brnp')
+
+
+	def BRZP(self, arguments: List[Dict]) -> int:
+		return self._base_BR(arguments, 'brzp')
+
+
+	def BRZNP(self, arguments: List[Dict]) -> int:
+		return self._base_BR(arguments, 'brznp')
+
+
+	def JMP(self, arguments: List[Dict]) -> int:
+		_required_argument_types(arguments, [REGISTER_NAME], 'jmp')
+
+		base = int(self._registers[_first_value(arguments[0])]) & 0b111
+
+		result = int(self._operations['jmp']) << 12 | base << 6
+		return result
+
+
+	def TRAP(self, arguments: List[Dict]) -> int:
+		_required_argument_types(arguments, [NUMBER], 'trap')
+
+		trapvect = int(_first_value(arguments[0])) & 0xff
+
+		result = int(self._operations['trap']) << 12 | trapvect
+		return result
+
+
+	def GETC(self, arguments: List[Dict]) -> int:
+		return self._trap_subops_base(arguments, 'getc')
+
+
+	def OUT(self, arguments: List[Dict]) -> int:
+		return self._trap_subops_base(arguments, 'out')
+
+
+	def PUTS(self, arguments: List[Dict]) -> int:
+		return self._trap_subops_base(arguments, 'puts')
+
+
+	def IN(self, arguments: List[Dict]) -> int:
+		return self._trap_subops_base(arguments, 'in')
+
+
+	def PUTSP(self, arguments: List[Dict]) -> int:
+		return self._trap_subops_base(arguments, 'putsp')
+
+
+	def HALT(self, arguments: List[Dict]) -> int:
+		return self._trap_subops_base(arguments, 'halt')
+
+
 	def __getitem__(self, name: str):
-		return getattr(EncodeOperation, name.upper())
+		return getattr(self, name.upper())
 
 
 MEMORY_SIZE = 65535
@@ -195,11 +346,11 @@ def _arguments_matched_any(arguments: List[dict], types: List[List[str]], instr:
 		matched, message = _arguments_matched(arguments, _types, instr)
 		if matched:
 			return i, str()
-	
+
 	return -1, message
 
 
-def _required_argument_types(arguments: List[dict], types: List[str], instr: str):	
+def _required_argument_types(arguments: List[dict], types: List[str], instr: str):
 	matched, message = _arguments_matched(arguments, types, instr)
 	if not matched:
 		raise SyntaxError(message)
@@ -266,6 +417,10 @@ def assemble(instructions: Dict[int, Dict[str, list]], memory: bytearray) -> byt
 
 	for addr, instr in instructions.items():
 		print(f'{hex(addr)}: {instr}')
+		op_name = _first_key(instr)
+		arguments = _first_value(instr)
+		encoded = hex(encode_operation[op_name](arguments))
+		print(encoded)
 
 	return memory
 
