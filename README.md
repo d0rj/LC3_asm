@@ -11,13 +11,13 @@ Simple asssembler for LC3 virtual machine. You can see my own realization of VM 
 
 ### Supports
 
-  - [x] Instructions
-  - [x] All types of arguments for instruction
-  - [x] Labels
-  - [x] Meta assebler directives (like ***.STRINGZ***)
-  - [x] Machine code generation
-  - [ ] Advanced label declaration
-  - [ ] AST optimization of assembly code
+- [x] Instructions
+- [x] All types of arguments for instruction
+- [x] Labels
+- [x] Meta assebler directives (like ***.STRINGZ***)
+- [x] Machine code generation
+- [ ] Advanced label declaration
+- [ ] AST optimization of assembly code
 
 ### Dependencies
 
@@ -25,6 +25,5 @@ Simple asssembler for LC3 virtual machine. You can see my own realization of VM 
 
 ## Resources
 
-  * [Some example of assembly language (Jupyter notebook)](https://jupyter.brynmawr.edu/services/public/dblank/CS240%20Computer%20Organization/2015-Fall/Notes/LC3%20Assembly%20Language.ipynb)
-
-  * [Doc file](http://people.cs.georgetown.edu/~squier/Teaching/HardwareFundamentals/LC3-trunk/docs/LC3-AssemblyManualAndExamples.pdf)
+- [Some example of assembly language (Jupyter notebook)](https://jupyter.brynmawr.edu/services/public/dblank/CS240%20Computer%20Organization/2015-Fall/Notes/LC3%20Assembly%20Language.ipynb)
+- [Doc file](http://people.cs.georgetown.edu/~squier/Teaching/HardwareFundamentals/LC3-trunk/docs/LC3-AssemblyManualAndExamples.pdf)
