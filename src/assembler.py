@@ -98,10 +98,6 @@ REGISTER_NAME = 'register_name'
 STRING = 'string'
 
 
-_labels: Dict[str, int] = dict()
-_memory = bytearray(MEMORY_SIZE)
-
-
 def _first_key(var: dict):
 	return list(var.keys())[0]
 
@@ -209,11 +205,10 @@ def _required_argument_types(arguments: List[dict], types: List[str], instr: str
 		raise SyntaxError(message)
 
 
-def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
-	global _labels, _memory
-	
+def preprocess(tree: Tree, memory: bytearray) -> Tuple[Dict[int, Dict[str, list]], bytearray]:
 	current_address = 0
 
+	labels: Dict[str, int] = dict()
 	commands: List[Tree] = tree.children
 	# eat a 'command' ast node
 	commands = [c.children[0] for c in commands]
@@ -224,7 +219,7 @@ def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
 		if command.data == INSTRUCTION:
 			instructions[current_address] = command
 		elif command.data == LABEL:
-			_labels[_extract_label_name(command)] = current_address
+			labels[_extract_label_name(command)] = current_address
 			current_address -= 1
 		elif _is_orig_command(command):
 			arguments = [_argument_tree_parse(arg_tree) for arg_tree in _get_arguments_tree(command)]
@@ -233,7 +228,7 @@ def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
 		elif _is_fill_command(command):
 			arguments = [_argument_tree_parse(arg_tree) for arg_tree in _get_arguments_tree(command)]
 			_required_argument_types(arguments, [NUMBER], FILL)
-			_memory[current_address] = _first_value(arguments[0])
+			memory[current_address] = _first_value(arguments[0])
 		elif _is_stringz_command(command):
 			arguments = [_argument_tree_parse(arg_tree) for arg_tree in _get_arguments_tree(command)]
 			_required_argument_types(arguments, [STRING], STRINGZ)
@@ -241,7 +236,7 @@ def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
 			string = str(_first_value(arguments[0])).replace('"', '')
 			_bytes = bytearray(bytes(string, 'ascii'))
 			_bytes.append(0x00)
-			_memory[current_address:(current_address + len(_bytes))] = _bytes
+			memory[current_address:(current_address + len(_bytes))] = _bytes
 		else:
 			raise SyntaxError(f'Unknown command: {command.children[0]}.')
 
@@ -253,7 +248,7 @@ def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
 		arguments = [_argument_tree_parse(arg_tree) for arg_tree in _get_arguments_tree(instruction)]
 		# replace labels with address
 		arguments = [
-			{ 'number': _labels[_first_value(arg)] } 
+			{ 'number': labels[_first_value(arg)] } 
 				if _first_key(arg) == LABEL 
 				else arg 
 			for arg in arguments
@@ -261,12 +256,10 @@ def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
 
 		result[addr] = { name: arguments }
 
-	return result
+	return result, memory
 
 
-def assemble(instructions: Dict[int, Dict[str, list]]):
-	global _memory
-
+def assemble(instructions: Dict[int, Dict[str, list]], memory: bytearray) -> bytearray:
 	operations = Operations(Operations.ADD)
 	registers = Registers(Registers.COND)
 	encode_operation = EncodeOperation()
@@ -274,14 +267,16 @@ def assemble(instructions: Dict[int, Dict[str, list]]):
 	for addr, instr in instructions.items():
 		print(f'{hex(addr)}: {instr}')
 
+	return memory
+
 
 def process(tree: Tree) -> bytearray:
-	global _memory
+	memory = bytearray(MEMORY_SIZE)
 
 	if tree.data != 'start':
 		raise ValueError('Unsupported tree format passed to function. Start node required.')
 
-	instructions = preprocess(tree)
-	assemble(instructions)
+	instructions, memory = preprocess(tree, memory)
+	assemble(instructions, memory)
 
-	return _memory
+	return memory
