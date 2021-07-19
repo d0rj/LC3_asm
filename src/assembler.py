@@ -15,11 +15,11 @@ class Operations(DictEnum):
 	JSR, AND, LDR, STR, \
 	RTI, NOT, LDI, STI, \
 	JMP, RES, LEA, TRAP = range(16)
-	GETC = 0xf0 << 8 | 0x20,
-	OUT = 0xf0 << 8 | 0x21,
-	PUTS = 0xf0 << 8 | 0x22,
-	IN = 0xf0 << 8 | 0x23,
-	PUTSP = 0xf0 << 8 | 0x24,
+	GETC = 0xf0 << 8 | 0x20
+	OUT = 0xf0 << 8 | 0x21
+	PUTS = 0xf0 << 8 | 0x22
+	IN = 0xf0 << 8 | 0x23
+	PUTSP = 0xf0 << 8 | 0x24
 	HALT = 0xf0 << 8 | 0x25
 
 
@@ -90,10 +90,12 @@ DEC_NUMBER = 'dec_number'
 PSEUDO_OP = 'pseudo_op'
 ORIG = '.orig'
 FILL = '.fill'
+STRINGZ = '.stringz'
 
 LABEL = 'label'
 INSTRUCTION = 'instruction'
 REGISTER_NAME = 'register_name'
+STRING = 'string'
 
 
 _labels: Dict[str, int] = dict()
@@ -122,6 +124,10 @@ def _is_orig_command(tree: Tree) -> bool:
 
 def _is_fill_command(tree: Tree) -> bool:
 	return True if _is_pseudo_op(tree) and str(tree.children[0]).lower() == FILL else False
+
+
+def _is_stringz_command(tree: Tree) -> bool:
+	return True if _is_pseudo_op(tree) and str(tree.children[0]).lower() == STRINGZ else False
 
 
 def _get_arguments_tree(tree: Tree) -> List[Tree]:
@@ -162,6 +168,8 @@ def _argument_tree_parse(argument: Tree) -> dict:
 		return { REGISTER_NAME: str(argument.children[0]) }
 	elif arg_type == LABEL:
 		return { LABEL: str(argument.children[0]) }
+	elif arg_type == STRING:
+		return { STRING: str(argument.children[0]) }
 
 	return None
 
@@ -226,9 +234,16 @@ def preprocess(tree: Tree) -> Dict[int, Dict[str, list]]:
 			arguments = [_argument_tree_parse(arg_tree) for arg_tree in _get_arguments_tree(command)]
 			_required_argument_types(arguments, [NUMBER], FILL)
 			_memory[current_address] = _first_value(arguments[0])
-		# TODO: stringz and blkw
-		#else:
-			#raise SyntaxError(f'Unknown command: {command.children[0]}.')
+		elif _is_stringz_command(command):
+			arguments = [_argument_tree_parse(arg_tree) for arg_tree in _get_arguments_tree(command)]
+			_required_argument_types(arguments, [STRING], STRINGZ)
+
+			string = str(_first_value(arguments[0])).replace('"', '')
+			_bytes = bytearray(bytes(string, 'ascii'))
+			_bytes.append(0x00)
+			_memory[current_address:(current_address + len(_bytes))] = _bytes
+		else:
+			raise SyntaxError(f'Unknown command: {command.children[0]}.')
 
 		current_address += 1
 
@@ -258,11 +273,6 @@ def assemble(instructions: Dict[int, Dict[str, list]]):
 
 	for addr, instr in instructions.items():
 		print(f'{hex(addr)}: {instr}')
-		print(hex(operations[_first_key(instr)]))
-
-	print(_memory[0x3008])
-	for label, addr in _labels.items():
-		print(f'{label}: {hex(addr)}')
 
 
 def process(tree: Tree) -> bytearray:
