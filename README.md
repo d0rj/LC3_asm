@@ -1,5 +1,7 @@
 # LC3_asm
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/de6a83d6b5d347bc8bb4b1aab31dab32)](https://app.codacy.com/gh/d0rj/LC3_asm?utm_source=github.com&utm_medium=referral&utm_content=d0rj/LC3_asm&utm_campaign=Badge_Grade_Settings)
+
 ## Overview
 
 ⚠WIP - now it can only parse grammar⚠
