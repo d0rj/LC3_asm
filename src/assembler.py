@@ -55,7 +55,7 @@ class EncodeOperation:
 
 	def _and_add_base(self, arguments: List[Dict], op_name: str) -> int:
 		rule, message = _arguments_matched_any(
-			arguments, 
+			arguments,
 			[
 				[REGISTER_NAME, REGISTER_NAME, REGISTER_NAME],
 				[REGISTER_NAME, REGISTER_NAME, NUMBER]
@@ -399,9 +399,9 @@ def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Dict[str, list]
 		arguments = [_argument_tree_parse(arg_tree) for arg_tree in _get_arguments_tree(instruction)]
 		# replace labels with address
 		arguments = [
-			{ 'number': labels[_first_value(arg)] } 
-				if _first_key(arg) == LABEL 
-				else arg 
+			{ 'number': labels[_first_value(arg)] }
+				if _first_key(arg) == LABEL
+				else arg
 			for arg in arguments
 		]
 
