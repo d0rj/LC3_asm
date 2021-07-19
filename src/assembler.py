@@ -356,7 +356,7 @@ def _required_argument_types(arguments: List[dict], types: List[str], instr: str
 		raise SyntaxError(message)
 
 
-def preprocess(tree: Tree, memory: bytearray) -> Tuple[Dict[int, Dict[str, list]], bytearray]:
+def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Dict[str, list]], List[int]]:
 	current_address = 0
 
 	labels: Dict[str, int] = dict()
@@ -410,28 +410,26 @@ def preprocess(tree: Tree, memory: bytearray) -> Tuple[Dict[int, Dict[str, list]
 	return result, memory
 
 
-def assemble(instructions: Dict[int, Dict[str, list]], memory: bytearray) -> bytearray:
-	operations = Operations(Operations.ADD)
-	registers = Registers(Registers.COND)
+def assemble(instructions: Dict[int, Dict[str, list]], memory: List[int]) -> List[int]:
 	encode_operation = EncodeOperation()
 
 	for addr, instr in instructions.items():
-		print(f'{hex(addr)}: {instr}')
 		op_name = _first_key(instr)
 		arguments = _first_value(instr)
-		encoded = hex(encode_operation[op_name](arguments))
-		print(encoded)
+
+		encoded = encode_operation[op_name](arguments)
+		memory[addr] = encoded
 
 	return memory
 
 
-def process(tree: Tree) -> bytearray:
-	memory = bytearray(MEMORY_SIZE)
+def process(tree: Tree) -> list:
+	memory = [0 for _ in range(MEMORY_SIZE)]
 
 	if tree.data != 'start':
 		raise ValueError('Unsupported tree format passed to function. Start node required.')
 
 	instructions, memory = preprocess(tree, memory)
-	assemble(instructions, memory)
+	memory = assemble(instructions, memory)
 
 	return memory
