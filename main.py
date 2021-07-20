@@ -6,29 +6,16 @@ from src.assembler import process
 with open('./grammar/lc3_assembly.lark', 'r') as file:
 	lc3_asm_grammar = file.read()
 
-program = """
-.orig 0x3000
-
-ADD r0, r5, R0 
-jmp r2
-HALT
-
-.someMetka: ; some comment
-	jmp r5
-	HALT
-add r0, r1, r5
-jmp r2
-halt
-
-.fill 0x5
-
-.STRINGZ "Hello world"
-
-.end
-"""
+with open('./examples/test.asm', 'r') as file:
+	program = file.read()
 
 l = Lark(lc3_asm_grammar)
 
-process(l.parse(program))
+memory = process(l.parse(program))
+byte_memory = bytearray([e for m in memory for e in (m & 0xff, (m & 0xff00) >> 8)])
 
-# print(l.parse(program).pretty())
+with open('out.raw', 'wb') as file:
+	file.write(byte_memory)
+
+with open('out.raw', 'rb') as file:
+	b = file.read()
