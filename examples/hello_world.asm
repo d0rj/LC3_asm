@@ -1,7 +1,7 @@
 .orig 0x3000
 
 ; Programm:
-ld r0, MyText
+lea r0, 2
 PUTS
 HALT
 
