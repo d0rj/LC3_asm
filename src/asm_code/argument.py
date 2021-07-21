@@ -13,6 +13,14 @@ class Argument:
 		self.value = value
 
 
+	def __str__(self) -> str:
+		return f'<Type: {self.type}; Value: {self.value}>'
+
+
+	def __repr__(self) -> str:
+		return self.__str__()
+
+
 	@classmethod
 	def fromTree(cls, argument: Tree):
 		arg_type = argument_type(argument)

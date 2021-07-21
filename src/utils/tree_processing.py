@@ -5,15 +5,8 @@ from typing import List
 from .lc3_constants import NumberType
 
 
-def extract_label_name(tree: Tree) -> str:
+def label_name(tree: Tree) -> str:
 	return str(tree.children[0])
-
-
-def get_arguments_tree(tree: Tree) -> List[Tree]:
-	args = [arg.children for arg in tree.children if isinstance(arg, Tree) and arg.data == 'arguments']
-	args = args[0] if len(args) > 0 else []
-	args = [arg.children[0] if arg.data == 'argument' else arg for arg in args]
-	return args
 
 
 def argument_type(tree: Tree) -> str:
@@ -22,6 +15,19 @@ def argument_type(tree: Tree) -> str:
 
 def instruction_name(tree: Tree) -> str:
 	return str(tree.children[0]).lower()
+
+
+def arguments_trees_of_tree(tree: Tree) -> List[Tree]:
+	args = [arg.children for arg in tree.children if isinstance(arg, Tree) and arg.data == 'arguments']
+	args = args[0] if len(args) > 0 else []
+	args = [arg.children[0] if arg.data == 'argument' else arg for arg in args]
+	return args
+
+
+def extract_commands(root: Tree) -> List[Tree]:
+	commands = root.children
+	# eat a 'command' ast node
+	return [c.children[0] for c in commands]
 
 
 def number_tree_to_int(tree: Tree) -> int:
