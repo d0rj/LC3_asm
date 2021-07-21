@@ -4,12 +4,13 @@ from typing import Dict, List, Tuple
 
 from .operation_encoder import OperationEncoder
 from .typechecking import required_argument_types
-from .utils.dict_variable import var_name, var_value, var_from_tree
+from .utils.argument import Argument
+from .utils.instruction import Instruction
 from .utils.lc3_constants import MEMORY_SIZE, TokenType as TT, PseudoOperation as PO
 from .utils.tree_processing import instruction_name, extract_label_name, get_arguments_tree
 
 
-def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Dict[str, list]], List[int]]:
+def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Instruction], List[int]]:
 	current_address = 0
 
 	labels: Dict[str, int] = dict()
@@ -27,18 +28,18 @@ def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Dict[str, list]
 			current_address -= 1
 		elif command.data == TT.PSEUDO_OP:
 			if command == PO.ORIG:
-				arguments = [var_from_tree(arg_tree) for arg_tree in get_arguments_tree(command)]
+				arguments = [Argument.fromTree(arg_tree) for arg_tree in get_arguments_tree(command)]
 				required_argument_types(arguments, [TT.NUMBER], PO.ORIG)
-				current_address = var_value(arguments[0]) - 1
+				current_address = int(arguments[0].value) - 1
 			elif command == PO.FILL:
-				arguments = [var_from_tree(arg_tree) for arg_tree in get_arguments_tree(command)]
+				arguments = [Argument.fromTree(arg_tree) for arg_tree in get_arguments_tree(command)]
 				required_argument_types(arguments, [TT.NUMBER], PO.FILL)
-				memory[current_address] = var_value(arguments[0])
+				memory[current_address] = int(arguments[0].value)
 			elif command == PO.STRINGZ:
-				arguments = [var_from_tree(arg_tree) for arg_tree in get_arguments_tree(command)]
+				arguments = [Argument.fromTree(arg_tree) for arg_tree in get_arguments_tree(command)]
 				required_argument_types(arguments, [TT.STRING], PO.STRINGZ)
 
-				string = str(var_value(arguments[0])).replace('"', '')
+				string = str(arguments[0].value).replace('"', '')
 				_bytes = bytearray(bytes(string, 'ascii'))
 				_bytes.append(0x00)
 				memory[current_address:(current_address + len(_bytes))] = _bytes
@@ -47,31 +48,28 @@ def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Dict[str, list]
 
 		current_address += 1
 
-	result: Dict[int, Dict[str, list]] = dict()
+	result: Dict[int, Instruction] = dict()
 	for addr, instruction in instructions.items():
 		name = instruction_name(instruction)
-		arguments = [var_from_tree(arg_tree) for arg_tree in get_arguments_tree(instruction)]
+		arguments = [Argument.fromTree(arg_tree) for arg_tree in get_arguments_tree(instruction)]
 		# replace labels with address
 		arguments = [
-			{ 'number': labels[var_value(arg)] }
-				if var_name(arg) == TT.LABEL
+			Argument(TT.NUMBER, labels[arg.value])
+				if arg.type == TT.LABEL
 				else arg
 			for arg in arguments
 		]
 
-		result[addr] = { name: arguments }
+		result[addr] = Instruction(name, arguments)
 
 	return result, memory
 
 
-def assemble(instructions: Dict[int, Dict[str, list]], memory: List[int]) -> List[int]:
+def assemble(instructions: Dict[int, Instruction], memory: List[int]) -> List[int]:
 	encode_operation = OperationEncoder()
 
 	for addr, instr in instructions.items():
-		op_name = var_name(instr)
-		arguments = var_value(instr)
-
-		encoded = encode_operation[op_name](arguments)
+		encoded = encode_operation[instr.name](instr.arguments)
 		memory[addr] = encoded
 
 	return memory

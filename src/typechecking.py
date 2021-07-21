@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-from .utils.dict_variable import var_name
+from .utils.argument import Argument
 
 
 def _argument_type_missmatch_message(instruction_name: str, required: str) -> str:
@@ -11,11 +11,11 @@ def _argument_count_missmatch_message(instruction_name: str, required: int, pass
 	return f'\'{instruction_name.upper()}\' instruction must have {required} arguments, but {passed} was gived.'
 
 
-def arguments_matched(arguments: List[dict], types: List[str], instr: str) -> Tuple[bool, str]:
+def arguments_matched(arguments: List[Argument], types: List[str], instr: str) -> Tuple[bool, str]:
 	if len(arguments) != len(types):
 		return False, _argument_count_missmatch_message(instr, len(types), len(arguments))
 
-	all_matched = all([var_name(arg) == _type for arg, _type in zip(arguments, types)])
+	all_matched = all([arg.type == _type for arg, _type in zip(arguments, types)])
 
 	if not all_matched:
 		return False, _argument_type_missmatch_message(instr, str(types).replace('[', '').replace(']', ''))
@@ -23,7 +23,7 @@ def arguments_matched(arguments: List[dict], types: List[str], instr: str) -> Tu
 	return True, str()
 
 
-def arguments_matched_any(arguments: List[dict], types: List[List[str]], instr: str) -> Tuple[int, str]:
+def arguments_matched_any(arguments: List[Argument], types: List[List[str]], instr: str) -> Tuple[int, str]:
 	for i, _types in enumerate(types):
 		matched, message = arguments_matched(arguments, _types, instr)
 		if matched:
@@ -32,7 +32,7 @@ def arguments_matched_any(arguments: List[dict], types: List[List[str]], instr: 
 	return -1, message
 
 
-def required_argument_types(arguments: List[dict], types: List[str], instr: str):
+def required_argument_types(arguments: List[Argument], types: List[str], instr: str):
 	matched, message = arguments_matched(arguments, types, instr)
 	if not matched:
 		raise SyntaxError(message)
