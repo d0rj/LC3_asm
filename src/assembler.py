@@ -1,12 +1,15 @@
 from lark import Tree
 
 from typing import Dict, List, Tuple
-from enum import Enum
 
 from .typechecking import required_argument_types, arguments_matched_any
 from .utils.dict_variable import var_name, var_value
-from .utils.lc3_constants import Operations, Registers, REGISTER_NAME, NUMBER, LABEL, STRING, INSTRUCTION, MEMORY_SIZE
-from .utils.tree_processing import *
+from .utils.lc3_constants import Operations, Registers,\
+	REGISTER_NAME, NUMBER, LABEL, STRING, INSTRUCTION, MEMORY_SIZE,\
+		ORIG, FILL, STRINGZ
+from .utils.tree_processing import argument_type, number_tree_to_int, \
+	get_arguments_tree, is_fill_command, is_orig_command, is_stringz_command, \
+		instruction_name, extract_label_name
 
 
 class EncodeOperation:

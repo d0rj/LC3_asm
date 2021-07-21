@@ -29,12 +29,14 @@ class Operations(DictEnum):
 	JSR, AND, LDR, STR, \
 	RTI, NOT, LDI, STI, \
 	JMP, RES, LEA, TRAP = range(16)
+
 	GETC = 0xf0 << 8 | 0x20
 	OUT = 0xf0 << 8 | 0x21
 	PUTS = 0xf0 << 8 | 0x22
 	IN = 0xf0 << 8 | 0x23
 	PUTSP = 0xf0 << 8 | 0x24
 	HALT = 0xf0 << 8 | 0x25
+    
 	BRN = 0b0000_100
 	BRZ = 0b0000_010
 	BRP = 0b0000_001
