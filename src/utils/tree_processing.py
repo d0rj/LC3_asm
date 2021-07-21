@@ -2,7 +2,7 @@ from lark import Tree
 
 from typing import List
 
-from .lc3_constants import PSEUDO_OP, ORIG, FILL, STRINGZ, HEX_NUMBER, BIN_NUMBER, DEC_NUMBER
+from .lc3_constants import TokenType, PseudoOperation, NumberType
 
 
 def extract_label_name(tree: Tree) -> str:
@@ -10,19 +10,19 @@ def extract_label_name(tree: Tree) -> str:
 
 
 def is_pseudo_op(tree: Tree) -> bool:
-	return tree.data == PSEUDO_OP
+	return tree.data == TokenType.PSEUDO_OP
 
 
 def is_orig_command(tree: Tree) -> bool:
-	return True if is_pseudo_op(tree) and str(tree.children[0]).lower() == ORIG else False
+	return True if is_pseudo_op(tree) and str(tree.children[0]).lower() == PseudoOperation.ORIG else False
 
 
 def is_fill_command(tree: Tree) -> bool:
-	return True if is_pseudo_op(tree) and str(tree.children[0]).lower() == FILL else False
+	return True if is_pseudo_op(tree) and str(tree.children[0]).lower() == PseudoOperation.FILL else False
 
 
 def is_stringz_command(tree: Tree) -> bool:
-	return True if is_pseudo_op(tree) and str(tree.children[0]).lower() == STRINGZ else False
+	return True if is_pseudo_op(tree) and str(tree.children[0]).lower() == PseudoOperation.STRINGZ else False
 
 
 def get_arguments_tree(tree: Tree) -> List[Tree]:
@@ -44,11 +44,11 @@ def number_tree_to_int(tree: Tree) -> int:
 	number_type = str(tree.children[0].type).lower()
 	number_str = str(tree.children[0])
 
-	if number_type == HEX_NUMBER:
+	if number_type == NumberType.HEX_NUMBER:
 		return int(number_str, 16)
-	if number_type == BIN_NUMBER:
+	if number_type == NumberType.BIN_NUMBER:
 		return int(number_str, 2)
-	if number_type == DEC_NUMBER:
+	if number_type == NumberType.DEC_NUMBER:
 		return int(number_str)
 
 	raise ValueError('Not a number.')

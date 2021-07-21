@@ -5,8 +5,7 @@ from typing import Dict, List, Tuple
 from .operation_encoder import OperationEncoder
 from .typechecking import required_argument_types
 from .utils.dict_variable import var_name, var_value
-from .utils.lc3_constants import REGISTER_NAME, NUMBER, LABEL, STRING, INSTRUCTION, MEMORY_SIZE,\
-	ORIG, FILL, STRINGZ
+from .utils.lc3_constants import MEMORY_SIZE, TokenType as TT, PseudoOperation as PO
 from .utils.tree_processing import argument_type, number_tree_to_int, \
 	get_arguments_tree, is_fill_command, is_orig_command, is_stringz_command, \
 		instruction_name, extract_label_name
@@ -15,14 +14,14 @@ from .utils.tree_processing import argument_type, number_tree_to_int, \
 def _argument_tree_parse(argument: Tree) -> dict:
 	arg_type = argument_type(argument)
 
-	if arg_type == NUMBER:
-		return { NUMBER: number_tree_to_int(argument) }
-	if arg_type == REGISTER_NAME:
-		return { REGISTER_NAME: str(argument.children[0]) }
-	if arg_type == LABEL:
-		return { LABEL: str(argument.children[0]) }
-	if arg_type == STRING:
-		return { STRING: str(argument.children[0]) }
+	if arg_type == TT.NUMBER:
+		return { TT.NUMBER: number_tree_to_int(argument) }
+	if arg_type == TT.REGISTER_NAME:
+		return { TT.REGISTER_NAME: str(argument.children[0]) }
+	if arg_type == TT.LABEL:
+		return { TT.LABEL: str(argument.children[0]) }
+	if arg_type == TT.STRING:
+		return { TT.STRING: str(argument.children[0]) }
 
 	return None
 
@@ -38,22 +37,22 @@ def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Dict[str, list]
 	instructions: Dict[int, Tree] = dict()
 
 	for command in commands:
-		if command.data == INSTRUCTION:
+		if command.data == TT.INSTRUCTION:
 			instructions[current_address] = command
-		elif command.data == LABEL:
+		elif command.data == TT.LABEL:
 			labels[extract_label_name(command)] = current_address
 			current_address -= 1
 		elif is_orig_command(command):
 			arguments = [_argument_tree_parse(arg_tree) for arg_tree in get_arguments_tree(command)]
-			required_argument_types(arguments, [NUMBER], ORIG)
+			required_argument_types(arguments, [TT.NUMBER], PO.ORIG)
 			current_address = var_value(arguments[0]) - 1
 		elif is_fill_command(command):
 			arguments = [_argument_tree_parse(arg_tree) for arg_tree in get_arguments_tree(command)]
-			required_argument_types(arguments, [NUMBER], FILL)
+			required_argument_types(arguments, [TT.NUMBER], PO.FILL)
 			memory[current_address] = var_value(arguments[0])
 		elif is_stringz_command(command):
 			arguments = [_argument_tree_parse(arg_tree) for arg_tree in get_arguments_tree(command)]
-			required_argument_types(arguments, [STRING], STRINGZ)
+			required_argument_types(arguments, [TT.STRING], PO.STRINGZ)
 
 			string = str(var_value(arguments[0])).replace('"', '')
 			_bytes = bytearray(bytes(string, 'ascii'))
@@ -71,7 +70,7 @@ def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Dict[str, list]
 		# replace labels with address
 		arguments = [
 			{ 'number': labels[var_value(arg)] }
-				if var_name(arg) == LABEL
+				if var_name(arg) == TT.LABEL
 				else arg
 			for arg in arguments
 		]

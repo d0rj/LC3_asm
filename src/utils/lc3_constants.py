@@ -3,20 +3,26 @@ from enum import Enum
 
 MEMORY_SIZE = 65535
 
-NUMBER = 'number'
-HEX_NUMBER = 'hex_number'
-BIN_NUMBER = 'bin_number'
-DEC_NUMBER = 'dec_number'
 
-PSEUDO_OP = 'pseudo_op'
-ORIG = '.orig'
-FILL = '.fill'
-STRINGZ = '.stringz'
+class NumberType:
+	HEX_NUMBER = 'hex_number'
+	BIN_NUMBER = 'bin_number'
+	DEC_NUMBER = 'dec_number'
 
-LABEL = 'label'
-INSTRUCTION = 'instruction'
-REGISTER_NAME = 'register_name'
-STRING = 'string'
+
+class TokenType:
+	NUMBER = 'number'
+	LABEL = 'label'
+	INSTRUCTION = 'instruction'
+	PSEUDO_OP = 'pseudo_op'
+	REGISTER_NAME = 'register_name'
+	STRING = 'string'
+
+
+class PseudoOperation:
+	ORIG = '.orig'
+	FILL = '.fill'
+	STRINGZ = '.stringz'
 
 
 class DictEnum(Enum):

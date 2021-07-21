@@ -1,7 +1,7 @@
 from typing import List, Dict
 
 from .typechecking import required_argument_types, arguments_matched_any
-from .utils.lc3_constants import Operations, Registers, REGISTER_NAME, NUMBER
+from .utils.lc3_constants import Operations, Registers, TokenType as TT
 from .utils.dict_variable import var_value
 
 
@@ -15,7 +15,7 @@ class OperationEncoder:
 
 
 	def NOT(self, arguments: List[Dict[str, list]]) -> int:
-		required_argument_types(arguments, [REGISTER_NAME, REGISTER_NAME], 'not')
+		required_argument_types(arguments, [TT.REGISTER_NAME, TT.REGISTER_NAME], 'not')
 
 		dst = int(self._registers[var_value(arguments[0])]) & 0b111
 		src = int(self._registers[var_value(arguments[1])]) & 0b111
@@ -28,8 +28,8 @@ class OperationEncoder:
 		rule, message = arguments_matched_any(
 			arguments,
 			[
-				[REGISTER_NAME, REGISTER_NAME, REGISTER_NAME],
-				[REGISTER_NAME, REGISTER_NAME, NUMBER]
+				[TT.REGISTER_NAME, TT.REGISTER_NAME, TT.REGISTER_NAME],
+				[TT.REGISTER_NAME, TT.REGISTER_NAME, TT.NUMBER]
 			],
 			op_name
 		)
@@ -53,7 +53,7 @@ class OperationEncoder:
 
 
 	def _register_pcoffset9_base(self, arguments: List[Dict[str, list]], op_name: str) -> int:
-		required_argument_types(arguments, [REGISTER_NAME, NUMBER], op_name)
+		required_argument_types(arguments, [TT.REGISTER_NAME, TT.NUMBER], op_name)
 
 		dst = int(self._registers[var_value(arguments[0])]) & 0b111
 		pc_offset = int(var_value(arguments[1])) & 0xf
@@ -63,7 +63,7 @@ class OperationEncoder:
 
 
 	def _register_base_offset_base(self, arguments: List[Dict[str, list]], op_name: str) -> int:
-		required_argument_types(arguments, [REGISTER_NAME, REGISTER_NAME, NUMBER], op_name)
+		required_argument_types(arguments, [TT.REGISTER_NAME, TT.REGISTER_NAME, TT.NUMBER], op_name)
 
 		dst = int(self._registers[var_value(arguments[0])]) & 0b111
 		base = int(self._registers[var_value(arguments[1])]) & 0b111
@@ -74,7 +74,7 @@ class OperationEncoder:
 
 
 	def _base_BR(self, arguments: List[Dict[str, list]], op_name: str) -> int:
-		required_argument_types(arguments, [NUMBER], op_name)
+		required_argument_types(arguments, [TT.NUMBER], op_name)
 
 		pc_offset9 = int(var_value(arguments[0])) & 0x1ff
 
@@ -157,7 +157,7 @@ class OperationEncoder:
 
 
 	def JMP(self, arguments: List[Dict[str, list]]) -> int:
-		required_argument_types(arguments, [REGISTER_NAME], 'jmp')
+		required_argument_types(arguments, [TT.REGISTER_NAME], 'jmp')
 
 		base = int(self._registers[var_value(arguments[0])]) & 0b111
 
@@ -166,7 +166,7 @@ class OperationEncoder:
 
 
 	def TRAP(self, arguments: List[Dict[str, list]]) -> int:
-		required_argument_types(arguments, [NUMBER], 'trap')
+		required_argument_types(arguments, [TT.NUMBER], 'trap')
 
 		trapvect = int(var_value(arguments[0])) & 0xff
 
