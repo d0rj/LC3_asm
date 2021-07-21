@@ -113,6 +113,8 @@ ENV/
 env.bak/
 venv.bak/
 
+lc3_asm_env/
+
 # Spyder project settings
 .spyderproject
 .spyproject
