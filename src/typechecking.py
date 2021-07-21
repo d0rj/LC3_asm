@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-from .utils.argument import Argument
+from .asm_code.argument import Argument
 
 
 def _argument_type_missmatch_message(instruction_name: str, required: str) -> str:

@@ -4,8 +4,8 @@ from typing import Dict, List, Tuple
 
 from .operation_encoder import OperationEncoder
 from .typechecking import required_argument_types
-from .utils.argument import Argument
-from .utils.instruction import Instruction
+from .asm_code.argument import Argument
+from .asm_code.instruction import Instruction
 from .utils.lc3_constants import MEMORY_SIZE, TokenType as TT, PseudoOperation as PO
 from .utils.tree_processing import instruction_name, extract_label_name, get_arguments_tree
 

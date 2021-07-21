@@ -1,8 +1,8 @@
-from typing import List
+from typing import Callable, List
 
 from .typechecking import required_argument_types, arguments_matched_any
 from .utils.lc3_constants import Operations, Registers, TokenType as TT
-from .utils.argument import Argument
+from .asm_code.argument import Argument
 
 
 class OperationEncoder:
@@ -198,5 +198,5 @@ class OperationEncoder:
 		return self._trap_subops_base(arguments, 'halt')
 
 
-	def __getitem__(self, name: str):
+	def __getitem__(self, name: str) -> Callable:
 		return getattr(self, name.upper())

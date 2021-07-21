@@ -1,7 +1,7 @@
 from lark import Tree
 
-from .tree_processing import argument_type, number_tree_to_int
-from .lc3_constants import TokenType as TT
+from ..utils.tree_processing import argument_type, number_tree_to_int
+from ..utils.lc3_constants import TokenType as TT
 
 
 class Argument:
