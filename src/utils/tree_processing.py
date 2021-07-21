@@ -2,27 +2,11 @@ from lark import Tree
 
 from typing import List
 
-from .lc3_constants import TokenType, PseudoOperation, NumberType
+from .lc3_constants import NumberType
 
 
 def extract_label_name(tree: Tree) -> str:
 	return str(tree.children[0])
-
-
-def is_pseudo_op(tree: Tree) -> bool:
-	return tree.data == TokenType.PSEUDO_OP
-
-
-def is_orig_command(tree: Tree) -> bool:
-	return True if is_pseudo_op(tree) and str(tree.children[0]).lower() == PseudoOperation.ORIG else False
-
-
-def is_fill_command(tree: Tree) -> bool:
-	return True if is_pseudo_op(tree) and str(tree.children[0]).lower() == PseudoOperation.FILL else False
-
-
-def is_stringz_command(tree: Tree) -> bool:
-	return True if is_pseudo_op(tree) and str(tree.children[0]).lower() == PseudoOperation.STRINGZ else False
 
 
 def get_arguments_tree(tree: Tree) -> List[Tree]:

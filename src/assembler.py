@@ -4,26 +4,9 @@ from typing import Dict, List, Tuple
 
 from .operation_encoder import OperationEncoder
 from .typechecking import required_argument_types
-from .utils.dict_variable import var_name, var_value
+from .utils.dict_variable import var_name, var_value, var_from_tree
 from .utils.lc3_constants import MEMORY_SIZE, TokenType as TT, PseudoOperation as PO
-from .utils.tree_processing import argument_type, number_tree_to_int, \
-	get_arguments_tree, is_fill_command, is_orig_command, is_stringz_command, \
-		instruction_name, extract_label_name
-
-
-def _argument_tree_parse(argument: Tree) -> dict:
-	arg_type = argument_type(argument)
-
-	if arg_type == TT.NUMBER:
-		return { TT.NUMBER: number_tree_to_int(argument) }
-	if arg_type == TT.REGISTER_NAME:
-		return { TT.REGISTER_NAME: str(argument.children[0]) }
-	if arg_type == TT.LABEL:
-		return { TT.LABEL: str(argument.children[0]) }
-	if arg_type == TT.STRING:
-		return { TT.STRING: str(argument.children[0]) }
-
-	return None
+from .utils.tree_processing import instruction_name, extract_label_name, get_arguments_tree
 
 
 def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Dict[str, list]], List[int]]:
@@ -42,22 +25,23 @@ def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Dict[str, list]
 		elif command.data == TT.LABEL:
 			labels[extract_label_name(command)] = current_address
 			current_address -= 1
-		elif is_orig_command(command):
-			arguments = [_argument_tree_parse(arg_tree) for arg_tree in get_arguments_tree(command)]
-			required_argument_types(arguments, [TT.NUMBER], PO.ORIG)
-			current_address = var_value(arguments[0]) - 1
-		elif is_fill_command(command):
-			arguments = [_argument_tree_parse(arg_tree) for arg_tree in get_arguments_tree(command)]
-			required_argument_types(arguments, [TT.NUMBER], PO.FILL)
-			memory[current_address] = var_value(arguments[0])
-		elif is_stringz_command(command):
-			arguments = [_argument_tree_parse(arg_tree) for arg_tree in get_arguments_tree(command)]
-			required_argument_types(arguments, [TT.STRING], PO.STRINGZ)
+		elif command.data == TT.PSEUDO_OP:
+			if command == PO.ORIG:
+				arguments = [var_from_tree(arg_tree) for arg_tree in get_arguments_tree(command)]
+				required_argument_types(arguments, [TT.NUMBER], PO.ORIG)
+				current_address = var_value(arguments[0]) - 1
+			elif command == PO.FILL:
+				arguments = [var_from_tree(arg_tree) for arg_tree in get_arguments_tree(command)]
+				required_argument_types(arguments, [TT.NUMBER], PO.FILL)
+				memory[current_address] = var_value(arguments[0])
+			elif command == PO.STRINGZ:
+				arguments = [var_from_tree(arg_tree) for arg_tree in get_arguments_tree(command)]
+				required_argument_types(arguments, [TT.STRING], PO.STRINGZ)
 
-			string = str(var_value(arguments[0])).replace('"', '')
-			_bytes = bytearray(bytes(string, 'ascii'))
-			_bytes.append(0x00)
-			memory[current_address:(current_address + len(_bytes))] = _bytes
+				string = str(var_value(arguments[0])).replace('"', '')
+				_bytes = bytearray(bytes(string, 'ascii'))
+				_bytes.append(0x00)
+				memory[current_address:(current_address + len(_bytes))] = _bytes
 		else:
 			raise SyntaxError(f'Unknown command: {command.children[0]}.')
 
@@ -66,7 +50,7 @@ def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Dict[str, list]
 	result: Dict[int, Dict[str, list]] = dict()
 	for addr, instruction in instructions.items():
 		name = instruction_name(instruction)
-		arguments = [_argument_tree_parse(arg_tree) for arg_tree in get_arguments_tree(instruction)]
+		arguments = [var_from_tree(arg_tree) for arg_tree in get_arguments_tree(instruction)]
 		# replace labels with address
 		arguments = [
 			{ 'number': labels[var_value(arg)] }
