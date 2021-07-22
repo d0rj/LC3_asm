@@ -8,7 +8,6 @@ from .asm_code.argument import Argument
 class OperationEncoder:
     __slots__ = '_operations', '_registers'
 
-
     def __init__(self) -> None:
         self._operations = Operations(0)
         self._registers = Registers(0)
