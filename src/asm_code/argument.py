@@ -12,14 +12,11 @@ class Argument:
         self.type_ = type_
         self.value = value
 
-
     def __str__(self) -> str:
         return f'<Type: {self.type_}; Value: {self.value}>'
 
-
     def __repr__(self) -> str:
         return self.__str__()
-
 
     @classmethod
     def fromTree(cls, argument: Tree):

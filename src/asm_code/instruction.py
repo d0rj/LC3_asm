@@ -11,10 +11,8 @@ class Instruction:
         self.name = name
         self.arguments = arguments
 
-
     def __str__(self) -> str:
         return f'<Instruction {self.name} with arguments {self.arguments}>'
-
 
     def __repr__(self) -> str:
         return self.__str__()
