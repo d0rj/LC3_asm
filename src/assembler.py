@@ -57,8 +57,8 @@ def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Instruction], L
         # replace labels with address
         arguments = [
             Argument(TT.NUMBER, labels[arg.value])
-                if arg.type == TT.LABEL
-                else arg
+            if arg.type_ == TT.LABEL
+            else arg
             for arg in arguments
         ]
         result[addr] = Instruction(name, arguments)

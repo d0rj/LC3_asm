@@ -5,16 +5,16 @@ from ..utils.lc3_constants import TokenType as TT
 
 
 class Argument:
-    __slots__ = 'type', 'value'
+    __slots__ = 'type_', 'value'
 
 
-    def __init__(self, type: str, value) -> None:
-        self.type = type
+    def __init__(self, type_: str, value) -> None:
+        self.type_ = type_
         self.value = value
 
 
     def __str__(self) -> str:
-        return f'<Type: {self.type}; Value: {self.value}>'
+        return f'<Type: {self.type_}; Value: {self.value}>'
 
 
     def __repr__(self) -> str:

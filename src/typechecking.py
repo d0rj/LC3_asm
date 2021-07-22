@@ -7,15 +7,15 @@ def _argument_type_missmatch_message(instruction_name: str, required: str) -> st
     return f'''\'{instruction_name.upper()}\' instruction arguments must have types {required}.'''
 
 
-def _argument_count_missmatch_message(instruction_name: str, required: int, passed) -> str:
+def _argument_count_missmatch_message(instruction_name: str, required: int, passed: int) -> str:
     return f'\'{instruction_name.upper()}\' instruction must have {required} arguments, but {passed} was gived.'
 
 
 def arguments_matched(arguments: List[Argument], types: List[str], instr: str) -> Tuple[bool, str]:
     if len(arguments) != len(types):
-        return False, _argument_count_missmatch_message(instr, len(types), arguments)
+        return False, _argument_count_missmatch_message(instr, len(types), len(arguments))
 
-    all_matched = all(arg.type == _type for arg, _type in zip(arguments, types))
+    all_matched = all(arg.type_ == _type for arg, _type in zip(arguments, types))
 
     if not all_matched:
         return False, _argument_type_missmatch_message(instr, str(types).replace('[', '').replace(']', ''))
