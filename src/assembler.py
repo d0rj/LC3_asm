@@ -17,10 +17,10 @@ def _arguments_from_tree(command: Tree) -> List[Argument]:
 def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Instruction], List[int]]:
 	current_address = 0
 
-	labels: Dict[str, int] = dict()
+	labels: Dict[str, int] = {}
 	commands = extract_commands(tree)
 
-	instructions: Dict[int, Tree] = dict()
+	instructions: Dict[int, Tree] = {}
 
 	for command in commands:
 		if command.data == TT.INSTRUCTION:
@@ -50,7 +50,7 @@ def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Instruction], L
 
 		current_address += 1
 
-	result: Dict[int, Instruction] = dict()
+	result: Dict[int, Instruction] = {}
 	for addr, instruction in instructions.items():
 		name = instruction_name(instruction)
 		arguments = _arguments_from_tree(instruction)
