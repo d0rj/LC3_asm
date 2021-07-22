@@ -32,9 +32,9 @@ class DictEnum(Enum):
 
 class Operations(DictEnum):
     BR, ADD, LD, ST, \
-    JSR, AND, LDR, STR, \
-    RTI, NOT, LDI, STI, \
-    JMP, RES, LEA, TRAP = range(16)
+        JSR, AND, LDR, STR, \
+            RTI, NOT, LDI, STI, \
+                JMP, RES, LEA, TRAP = range(16)
 
     GETC = 0xf0 << 8 | 0x20
     OUT = 0xf0 << 8 | 0x21
