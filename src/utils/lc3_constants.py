@@ -1,3 +1,10 @@
+"""
+Module with LC3 constants.
+
+Attributes:
+    MEMORY_SIZE (int): Size of LC3 machine's memory.
+"""
+
 from enum import Enum
 
 

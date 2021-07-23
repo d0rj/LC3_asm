@@ -6,17 +6,17 @@ from ..utils.lc3_constants import TokenType as TT
 
 class Argument:
     """
-    A class to represent an assembler instruction  argument.
+    A class to represent an assembler instruction argument.
 
     Essentially, it's util class for two fields aggregation.
 
     Attributes:
         type_ (str): An argument type.
-            Can be one of :class:`utils.lc3_constants.TokenType`.
+            Can be one of `utils.lc3_constants.TokenType`.
         value (any): Pythonic representation of argument.
 
     Methods:
-        static :meth:`fromTree`.
+        static `fromTree`.
     """
 
     __slots__ = 'type_', 'value'
@@ -28,11 +28,11 @@ class Argument:
         Note:
             It is recommended not to use it directly,
             but to create objects of this class
-            using a static method :meth:`Argument.fromTree`.
+            using a static method `Argument.fromTree`.
 
         Args:
             type_ (str): An argument type.
-                Can be one of :class:`utils.lc3_constants.TokenType`.
+                Can be one of `utils.lc3_constants.TokenType`.
             value (any): Pythonic representation of an argument.
         """
         self.type_ = type_
@@ -55,21 +55,21 @@ class Argument:
         """
         Simple `__repr__` override.
 
-        Based on :meth:`__str__` private method and returns the same.
+        Based on `__str__` private method and returns the same.
         """
         return self.__str__()
 
     @classmethod
     def fromTree(cls, argument: Tree):
         """
-        Static fabric from :class:`lark.Tree` object.
+        Static fabric from `lark.Tree` object.
 
         Args:
             argument (lark.Tree): Tree object with argument representation,
             builded from parser.
 
         Returns:
-            (Argument | None): Returns constructed :class:`Argument` object;
+            (Argument | None): Returns constructed `Argument` object;
             or `None` if argument type not supported.
 
         Example:
