@@ -35,7 +35,6 @@ class Argument:
                 Can be one of :class:`utils.lc3_constants.TokenType`.
             value (any): Pythonic representation of an argument.
         """
-
         self.type_ = type_
         self.value = value
 
@@ -50,7 +49,6 @@ class Argument:
             >>> str(Argument('number', 42))
             <Type: number; Value: 42>
         """
-
         return f'<Type: {self.type_}; Value: {self.value}>'
 
     def __repr__(self) -> str:
@@ -59,7 +57,6 @@ class Argument:
 
         Based on :meth:`__str__` private method and returns the same.
         """
-
         return self.__str__()
 
     @classmethod
@@ -82,7 +79,6 @@ class Argument:
             >>> str(argument)
             <Type: number; Value: 12288>
         """
-
         arg_type = argument_type(argument)
 
         if arg_type == TT.NUMBER:
