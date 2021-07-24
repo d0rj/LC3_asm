@@ -89,7 +89,7 @@ def process(tree: Tree) -> list:
     memory = [0 for _ in range(MEMORY_SIZE)]
 
     if tree.data != 'start':
-        raise ValueError('Unsupported tree format passed to function. Start node required.')
+        raise ValueError('Unsupported tree format passed to function.')
 
     instructions, memory = preprocess(tree, memory)
     memory = assemble(instructions, memory)

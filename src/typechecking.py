@@ -4,11 +4,12 @@ from .asm_code.argument import Argument
 
 
 def _type_missmatch_message(instr: str, types: List[str]) -> str:
-    return f"\'{instr.upper()}\' instruction arguments must have types {types}."
+    return f"'{instr.upper()}' instruction arguments must have types {types}."
 
 
 def _count_missmatch_message(instr: str, required: int, passed: int) -> str:
-    return f'\'{instr.upper()}\' instruction must have {required} arguments, but {passed} was gived.'
+    return "'%s' instruction must have %i arguments, but %i was gived." %\
+        (instr.upper(), required, passed)
 
 
 def arguments_matched(
