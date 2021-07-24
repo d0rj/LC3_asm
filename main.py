@@ -11,8 +11,8 @@ def main() -> None:
         program = file.read()
 
     lark = Lark(lc3_asm_grammar)
-
-    memory = process(lark.parse(program))
+    parsed_tree = lark.parse(program)
+    memory = process(parsed_tree)
     byte_memory = bytearray([
         e
         for m in memory

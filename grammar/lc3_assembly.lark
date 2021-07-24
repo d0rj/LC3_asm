@@ -1,26 +1,26 @@
 start: command+ ".END"i
 
 command: label
-		|instruction
-		|pseudo_op
+        |instruction
+        |pseudo_op
 
-label: LABEL_NAME ":"
+label.3: LABEL_NAME ":"
 
-instruction: INSTRUCTION_NAME arguments?
+instruction.3: INSTRUCTION_NAME arguments?
 
-pseudo_op: PSEUDO_OP_NAME arguments?
+pseudo_op.3: PSEUDO_OP_NAME arguments?
 
 arguments: argument
-			| argument ("," argument)+
+            | argument ("," argument)+
 
 argument: REGISTER_NAME -> register_name
-		| number
-		| LABEL_NAME -> label
-		| STRING_LITERAL -> string
+        | number
+        | LABEL_NAME -> label
+        | STRING_LITERAL -> string
 
 number: DEC_NUMBER
-	| HEX_NUMBER
-	| BIN_NUMBER
+    | HEX_NUMBER
+    | BIN_NUMBER
 
 
 LABEL_NAME: "."? WORD
