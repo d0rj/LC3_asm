@@ -1,6 +1,6 @@
-from lark import Tree
-
 from typing import Dict, List, Tuple
+
+from lark import Tree
 
 from .operation_encoder import OperationEncoder
 from .typechecking import required_argument_types

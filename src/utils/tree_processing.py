@@ -1,6 +1,6 @@
-from lark import Tree
-
 from typing import List
+
+from lark import Tree
 
 from .lc3_constants import NumberType
 
