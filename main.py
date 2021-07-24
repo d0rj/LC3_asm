@@ -1,3 +1,4 @@
+from typing import BinaryIO
 from lark import Lark
 
 from src.assembler import process

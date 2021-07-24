@@ -18,14 +18,19 @@ def instruction_name(tree: Tree) -> str:
 
 
 def arguments_trees_of_tree(tree: Tree) -> List[Tree]:
-    args = [arg.children for arg in tree.children if isinstance(arg, Tree) and arg.data == 'arguments']
-    args = args[0] if len(args) > 0 else []
+    args: List[List[Tree]] = [
+        arg.children
+        for arg in tree.children
+        if isinstance(arg, Tree) and arg.data == 'arguments'
+        if isinstance(arg.children, list)
+    ]
+    args: List[Tree] = args[0] if len(args) > 0 else []
     args = [arg.children[0] if arg.data == 'argument' else arg for arg in args]
     return args
 
 
 def extract_commands(root: Tree) -> List[Tree]:
-    commands = root.children
+    commands: List[Tree] = root.children
     # eat a 'command' ast node
     return [c.children[0] for c in commands]
 
