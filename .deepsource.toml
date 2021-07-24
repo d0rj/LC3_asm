@@ -10,4 +10,6 @@ name = "python"
 enabled = true
 
   [analyzers.meta]
+  skip_doc_coverage = ["module", "magic", "init"]
   runtime_version = "3.x.x"
+  type_checker = "mypy"
