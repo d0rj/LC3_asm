@@ -13,12 +13,19 @@ class OperationEncoder:
         self._registers = Registers(0)
 
     def NOT(self, arguments: List[Argument]) -> int:
-        required_argument_types(arguments, [TT.REGISTER_NAME, TT.REGISTER_NAME], 'not')
+        required_argument_types(
+            arguments,
+            [TT.REGISTER_NAME, TT.REGISTER_NAME],
+            'not'
+        )
 
         dst = int(self._registers[str(arguments[0].value)]) & 0b111
         src = int(self._registers[str(arguments[1].value)]) & 0b111
 
-        result = int(self._operations['not']) << 12 | dst << 9 | src << 6 | 0b111111
+        result = int(self._operations['not']) << 12\
+            | dst << 9\
+            | src << 6\
+            | 0b111111
         return result
 
     def _and_add_base(self, arguments: List[Argument], op_name: str) -> int:
@@ -36,20 +43,34 @@ class OperationEncoder:
             src1 = int(self._registers[str(arguments[1].value)]) & 0b111
             src2 = int(self._registers[str(arguments[2].value)]) & 0b111
 
-            result = int(self._operations[op_name]) << 12 | dst << 9 | src1 << 6 | 0b000 << 3 | src2
+            result = int(self._operations[op_name]) << 12\
+                | dst << 9\
+                | src1 << 6\
+                | 0b000 << 3\
+                | src2
         elif rule == 1:
             dst = int(self._registers[str(arguments[0].value)]) & 0b111
             src1 = int(self._registers[str(arguments[1].value)]) & 0b111
             imm5 = int(arguments[2].value) & 0b11111
 
-            result = int(self._operations[op_name]) << 12 | dst << 9 | src1 << 6 | 0b1 << 5 | imm5
+            result = int(self._operations[op_name]) << 12\
+                | dst << 9\
+                | src1 << 6\
+                | 0b1 << 5\
+                | imm5
         else:
             raise SyntaxError(message)
 
         return result
 
-    def _register_pcoffset9_base(self, arguments: List[Argument], op_name: str) -> int:
-        required_argument_types(arguments, [TT.REGISTER_NAME, TT.NUMBER], op_name)
+    def _register_pcoffset9_base(
+            self, arguments: List[Argument], op_name: str
+            ) -> int:
+        required_argument_types(
+            arguments,
+            [TT.REGISTER_NAME, TT.NUMBER],
+            op_name
+        )
 
         dst = int(self._registers[str(arguments[0].value)]) & 0b111
         pc_offset = int(arguments[1].value) & 0xf
@@ -57,14 +78,23 @@ class OperationEncoder:
         result = int(self._operations[op_name]) << 12 | dst << 9 | pc_offset
         return result
 
-    def _register_base_offset_base(self, arguments: List[Argument], op_name: str) -> int:
-        required_argument_types(arguments, [TT.REGISTER_NAME, TT.REGISTER_NAME, TT.NUMBER], op_name)
+    def _register_base_offset_base(
+            self, arguments: List[Argument], op_name: str
+            ) -> int:
+        required_argument_types(
+            arguments,
+            [TT.REGISTER_NAME, TT.REGISTER_NAME, TT.NUMBER],
+            op_name
+        )
 
         dst = int(self._registers[str(arguments[0].value)]) & 0b111
         base = int(self._registers[str(arguments[1].value)]) & 0b111
         offset6 = int(arguments[2].value) & 0b111111
 
-        result = int(self._operations[op_name]) << 12 | dst << 9 | base << 6 | offset6
+        result = int(self._operations[op_name]) << 12\
+            | dst << 9\
+            | base << 6\
+            | offset6
         return result
 
     def _base_BR(self, arguments: List[Argument], op_name: str) -> int:
@@ -75,7 +105,9 @@ class OperationEncoder:
         result = int(self._operations[op_name]) << 9 | pc_offset9
         return result
 
-    def _trap_subops_base(self, arguments: List[Argument], op_name: str) -> int:
+    def _trap_subops_base(
+            self, arguments: List[Argument], op_name: str
+            ) -> int:
         required_argument_types(arguments, [], op_name)
 
         return self._operations[op_name]

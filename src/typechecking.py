@@ -12,9 +12,7 @@ def _count_missmatch_message(instr: str, required: int, passed: int) -> str:
 
 
 def arguments_matched(
-        args: List[Argument],
-        types: List[str],
-        instr: str
+        args: List[Argument], types: List[str], instr: str
         ) -> Tuple[bool, str]:
     if len(args) != len(types):
         return False, _count_missmatch_message(instr, len(types), len(args))
@@ -28,9 +26,7 @@ def arguments_matched(
 
 
 def arguments_matched_any(
-        args: List[Argument],
-        list_types: List[List[str]],
-        instr: str
+        args: List[Argument], list_types: List[List[str]], instr: str
         ) -> Tuple[int, str]:
     for i, types in enumerate(list_types):
         matched, message = arguments_matched(args, types, instr)

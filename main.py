@@ -1,4 +1,3 @@
-from typing import BinaryIO
 from lark import Lark
 
 from src.assembler import process
@@ -14,7 +13,11 @@ def main() -> None:
     lark = Lark(lc3_asm_grammar)
 
     memory = process(lark.parse(program))
-    byte_memory = bytearray([e for m in memory for e in (m & 0xff, (m & 0xff00) >> 8)])
+    byte_memory = bytearray([
+        e
+        for m in memory
+        for e in (m & 0xff, (m & 0xff00) >> 8)
+    ])
 
     with open('./output_programms/hello_world.raw', 'wb') as file:
         file.write(byte_memory)

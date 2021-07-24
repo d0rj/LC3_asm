@@ -6,15 +6,22 @@ from .operation_encoder import OperationEncoder
 from .typechecking import required_argument_types
 from .asm_code.argument import Argument
 from .asm_code.instruction import Instruction
-from .utils.lc3_constants import MEMORY_SIZE, TokenType as TT, PseudoOperation as PO
-from .utils.tree_processing import instruction_name, label_name, arguments_trees_of_tree, extract_commands
+from .utils.lc3_constants import MEMORY_SIZE,\
+    TokenType as TT, PseudoOperation as PO
+from .utils.tree_processing import instruction_name, label_name,\
+    arguments_trees_of_tree, extract_commands
 
 
 def _arguments_from_tree(command: Tree) -> List[Argument]:
-    return [Argument.fromTree(arg_tree) for arg_tree in arguments_trees_of_tree(command)]
+    return [
+        Argument.fromTree(arg_tree)
+        for arg_tree in arguments_trees_of_tree(command)
+    ]
 
 
-def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Instruction], List[int]]:
+def preprocess(
+        tree: Tree, memory: List[int]
+        ) -> Tuple[Dict[int, Instruction], List[int]]:
     current_address = 0
 
     labels: Dict[str, int] = {}
@@ -66,7 +73,9 @@ def preprocess(tree: Tree, memory: List[int]) -> Tuple[Dict[int, Instruction], L
     return result, memory
 
 
-def assemble(instructions: Dict[int, Instruction], memory: List[int]) -> List[int]:
+def assemble(
+        instructions: Dict[int, Instruction], memory: List[int]
+        ) -> List[int]:
     encode_operation = OperationEncoder()
 
     for addr, instr in instructions.items():
