@@ -1,17 +1,52 @@
+import argparse
+import os
+
 from lark import Lark
 
 from src.assembler import process
 
 
-def main() -> None:
+def parse_cmd_arguments() -> argparse.Namespace:
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument(
+        '-p', '--path',
+        help='Path to assembly source',
+        type=str,
+        default='./examples/hello_world.asm'
+    )
+    arg_parser.add_argument(
+        '-o', '--out',
+        help='Path of output file',
+        type=str,
+        default='./output_programms/hello_world.raw'
+    )
+
+    args = arg_parser.parse_args()
+    if not args.path:
+        raise AttributeError('Missed required parameter --path')
+    if not args.out:
+        raise AttributeError('Missed required parameter --out')
+
+    if not os.path.exists(args.path):
+        raise FileExistsError(f'File \'{args.path}\' does not exists')
+
+    return args
+
+
+def create_parser() -> Lark:
     with open('./grammar/lc3_assembly.lark', 'r') as file:
         lc3_asm_grammar = file.read()
+    return Lark(lc3_asm_grammar)
 
-    with open('./examples/hello_world.asm', 'r') as file:
+
+def main() -> None:
+    args = parse_cmd_arguments()
+
+    with open(args.path, 'r') as file:
         program = file.read()
 
-    lark = Lark(lc3_asm_grammar)
-    parsed_tree = lark.parse(program)
+    parser = create_parser()
+    parsed_tree = parser.parse(program)
     memory = process(parsed_tree)
     byte_memory = bytearray([
         e
@@ -19,7 +54,7 @@ def main() -> None:
         for e in (m & 0xff, (m & 0xff00) >> 8)
     ])
 
-    with open('./output_programms/hello_world.raw', 'wb') as file:
+    with open(args.out, 'wb') as file:
         file.write(byte_memory)
 
 
