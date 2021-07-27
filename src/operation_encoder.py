@@ -12,22 +12,6 @@ class OperationEncoder:
         self._operations = Operations(0)
         self._registers = Registers(0)
 
-    def NOT(self, arguments: List[Argument]) -> int:
-        required_argument_types(
-            arguments,
-            [TT.REGISTER_NAME, TT.REGISTER_NAME],
-            'not'
-        )
-
-        dst = int(self._registers[str(arguments[0].value)]) & 0b111
-        src = int(self._registers[str(arguments[1].value)]) & 0b111
-
-        result = int(self._operations['not']) << 12\
-            | dst << 9\
-            | src << 6\
-            | 0b111111
-        return result
-
     def _and_add_base(self, arguments: List[Argument], op_name: str) -> int:
         rule, message = arguments_matched_any(
             arguments,
@@ -162,6 +146,22 @@ class OperationEncoder:
 
     def BRZNP(self, arguments: List[Argument]) -> int:
         return self._base_BR(arguments, 'brznp')
+
+    def NOT(self, arguments: List[Argument]) -> int:
+        required_argument_types(
+            arguments,
+            [TT.REGISTER_NAME, TT.REGISTER_NAME],
+            'not'
+        )
+
+        dst = int(self._registers[str(arguments[0].value)]) & 0b111
+        src = int(self._registers[str(arguments[1].value)]) & 0b111
+
+        result = int(self._operations['not']) << 12\
+            | dst << 9\
+            | src << 6\
+            | 0b111111
+        return result
 
     def JMP(self, arguments: List[Argument]) -> int:
         required_argument_types(arguments, [TT.REGISTER_NAME], 'jmp')
