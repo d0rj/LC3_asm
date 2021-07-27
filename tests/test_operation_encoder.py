@@ -83,3 +83,43 @@ def test_encode_add():
         ],
         0x16A7
     )
+
+
+def test_encode_and():
+    _encoded_must_be(
+        'and',
+        [
+            Argument(TT.REGISTER_NAME, 'r1'),
+            Argument(TT.REGISTER_NAME, 'r6'),
+            Argument(TT.REGISTER_NAME, 'r4')
+        ],
+        0x5384
+    )
+    _encoded_must_be(
+        'and',
+        [
+            Argument(TT.REGISTER_NAME, 'r0'),
+            Argument(TT.REGISTER_NAME, 'r2'),
+            Argument(TT.REGISTER_NAME, 'r1')
+        ],
+        0x5081
+    )
+
+    _encoded_must_be(
+        'and',
+        [
+            Argument(TT.REGISTER_NAME, 'r3'),
+            Argument(TT.REGISTER_NAME, 'r3'),
+            Argument(TT.NUMBER, 0)
+        ],
+        0x56E0
+    )
+    _encoded_must_be(
+        'and',
+        [
+            Argument(TT.REGISTER_NAME, 'r0'),
+            Argument(TT.REGISTER_NAME, 'r7'),
+            Argument(TT.NUMBER, 4)
+        ],
+        0x51E4
+    )
