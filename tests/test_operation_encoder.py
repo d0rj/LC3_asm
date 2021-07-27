@@ -123,3 +123,22 @@ def test_encode_and():
         ],
         0x51E4
     )
+
+
+def test_encode_ld():
+    _encoded_must_be(
+        'ld',
+        [
+            Argument(TT.REGISTER_NAME, 'r1'),
+            Argument(TT.NUMBER, 0x3008)
+        ],
+        0x2207
+    )
+    _encoded_must_be(
+        'ld',
+        [
+            Argument(TT.REGISTER_NAME, 'r2'),
+            Argument(TT.NUMBER, 0x3006)
+        ],
+        0x2405
+    )
