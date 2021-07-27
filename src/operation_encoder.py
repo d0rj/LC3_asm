@@ -73,7 +73,7 @@ class OperationEncoder:
         )
 
         dst = int(self._registers[str(arguments[0].value)]) & 0b111
-        pc_offset = int(arguments[1].value) & 0xf
+        pc_offset = (int(arguments[1].value) & 0xf) - 1
 
         result = int(self._operations[op_name]) << 12 | dst << 9 | pc_offset
         return result
