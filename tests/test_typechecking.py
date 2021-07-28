@@ -64,8 +64,8 @@ def test_arguments_matched_any_unmatch():
         [TT.NUMBER],
         [TT.NUMBER, TT.NUMBER, TT.NUMBER]
     ]
-    assert arguments_matched_any(args, pattern, 'many') ==\
-        (-1, _count_missmatch_message('many', len(pattern[1]), len(args)))
+    assert arguments_matched_any(args, pattern, 'count') ==\
+        (-1, _count_missmatch_message('count', len(pattern[1]), len(args)))
 
     args = [Argument(TT.NUMBER, 10), Argument(TT.NUMBER, 20)]
     pattern = [
