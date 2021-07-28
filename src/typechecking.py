@@ -89,6 +89,21 @@ def arguments_matched_any(
 
 
 def required_argument_types(args: List[Argument], types: List[str], instr: str):
+    """
+    Raises `SyntaxError` if passed arguments not matched `types` pattern
+
+    Args:
+        args (List[Argument]): Actual arguments to check
+        types (List[str]): Types pattern to check
+        instr (str): Instruction name. Required for error message
+
+    Note:
+        Same as `arguments_matched`, but raises `SyntaxError` instead of
+        `False` return
+
+    Raises:
+        SyntaxError: If `args` not matched `types`
+    """
     matched, message = arguments_matched(args, types, instr)
     if not matched:
         raise SyntaxError(message)
