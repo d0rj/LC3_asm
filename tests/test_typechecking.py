@@ -98,12 +98,12 @@ def test_required_argument():
             args = [Argument(TT.NUMBER, 10)] * i
             pattern = [TT.NUMBER] * i
             required_argument_types(args, pattern, 'count')
-    except:
+    except SyntaxError:
         pytest.fail('Same count raises exception.')
 
     try:
         args = [Argument(TT.NUMBER, 10), Argument(TT.STRING, 'strr')]
         pattern = [TT.NUMBER, TT.STRING]
         required_argument_types(args, pattern, 'different_types')
-    except:
+    except SyntaxError:
         pytest.fail('Same type raises exception.')
