@@ -2,7 +2,7 @@ from typing import Callable, List
 
 from lc3asm.typechecking import required_argument_types, arguments_matched_any
 from lc3asm.utils.constants import Operations, Registers, TokenType as TT
-from lc3asm.asm_code.argument import Argument
+from lc3asm.ast.argument import Argument
 
 
 class OperationEncoder:

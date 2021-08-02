@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-from lc3asm.asm_code.argument import Argument
+from lc3asm.ast.argument import Argument
 
 
 def _type_missmatch_message(instr: str, types: List[str]) -> str:

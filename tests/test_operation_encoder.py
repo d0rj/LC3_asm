@@ -1,6 +1,6 @@
 from typing import List
 
-from lc3asm.asm_code.argument import Argument
+from lc3asm.ast.argument import Argument
 from lc3asm.operation_encoder import OperationEncoder
 from lc3asm.utils.constants import TokenType as TT
 
