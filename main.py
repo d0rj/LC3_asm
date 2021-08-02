@@ -1,9 +1,8 @@
 import argparse
 import os
 
-from lark import Lark
-
 from src.assembler import process
+from src.parser import parse
 
 
 def parse_cmd_arguments() -> argparse.Namespace:
@@ -33,20 +32,13 @@ def parse_cmd_arguments() -> argparse.Namespace:
     return args
 
 
-def create_parser() -> Lark:
-    with open('./grammar/lc3_assembly.lark', 'r') as file:
-        lc3_asm_grammar = file.read()
-    return Lark(lc3_asm_grammar)
-
-
 def main() -> None:
     args = parse_cmd_arguments()
 
     with open(args.path, 'r') as file:
         program = file.read()
 
-    parser = create_parser()
-    parsed_tree = parser.parse(program)
+    parsed_tree = parse(program)
     memory = process(parsed_tree)
     byte_memory = bytearray([
         e
