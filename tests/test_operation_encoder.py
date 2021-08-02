@@ -1,8 +1,8 @@
 from typing import List
 
-from src.asm_code.argument import Argument
-from src.operation_encoder import OperationEncoder
-from src.utils.lc3_constants import TokenType as TT
+from lc3asm.asm_code.argument import Argument
+from lc3asm.operation_encoder import OperationEncoder
+from lc3asm.utils.lc3_constants import TokenType as TT
 
 
 _operationEncoder = OperationEncoder()

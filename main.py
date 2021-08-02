@@ -1,8 +1,8 @@
 import argparse
 import os
 
-from src.assembler import process
-from src.parser import parse
+from lc3asm.assembler import process
+from lc3asm.parser import parse
 
 
 def parse_cmd_arguments() -> argparse.Namespace:
