@@ -27,7 +27,6 @@ class Argument:
     type_: str
     value: Any
 
-
     @classmethod
     def fromTree(cls, argument: Tree):
         """
