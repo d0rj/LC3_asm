@@ -2,7 +2,7 @@ from typing import List
 
 from lark import Tree
 
-from lc3asm.utils.lc3_constants import NumberType
+from lc3asm.utils.constants import NumberType
 
 
 def label_name(tree: Tree) -> str:

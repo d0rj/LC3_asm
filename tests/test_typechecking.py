@@ -4,7 +4,7 @@ from lc3asm.asm_code.argument import Argument
 from lc3asm.typechecking import arguments_matched, arguments_matched_any,\
     required_argument_types,\
     _count_missmatch_message, _type_missmatch_message
-from lc3asm.utils.lc3_constants import TokenType as TT
+from lc3asm.utils.constants import TokenType as TT
 
 
 def test_arguments_matched_simple():

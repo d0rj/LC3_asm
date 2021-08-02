@@ -6,7 +6,7 @@ from lc3asm.operation_encoder import OperationEncoder
 from lc3asm.typechecking import required_argument_types
 from lc3asm.asm_code.argument import Argument
 from lc3asm.asm_code.instruction import Instruction
-from lc3asm.utils.lc3_constants import MEMORY_SIZE,\
+from lc3asm.utils.constants import MEMORY_SIZE,\
     TokenType as TT, PseudoOperation as PO
 from lc3asm.utils.tree_processing import instruction_name, label_name,\
     arguments_trees_of_tree, extract_commands

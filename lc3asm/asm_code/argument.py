@@ -4,7 +4,7 @@ from typing import Any
 from lark import Tree
 
 from lc3asm.utils.tree_processing import argument_type, number_tree_to_int
-from lc3asm.utils.lc3_constants import TokenType as TT
+from lc3asm.utils.constants import TokenType as TT
 
 
 @dataclass(frozen=True)
