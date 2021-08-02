@@ -1,9 +1,13 @@
+from dataclasses import dataclass
+from typing import Any
+
 from lark import Tree
 
 from lc3asm.utils.tree_processing import argument_type, number_tree_to_int
 from lc3asm.utils.lc3_constants import TokenType as TT
 
 
+@dataclass(frozen=True)
 class Argument:
     """
     A class to represent an assembler instruction argument.
@@ -20,44 +24,9 @@ class Argument:
     """
 
     __slots__ = 'type_', 'value'
+    type_: str
+    value: Any
 
-    def __init__(self, type_: str, value) -> None:
-        """
-        Instruction's argument constructor.
-
-        Note:
-            It is recommended not to use it directly,
-            but to create objects of this class
-            using a static method `Argument.fromTree`.
-
-        Args:
-            type_ (str): An argument type.
-                Can be one of `utils.lc3_constants.TokenType`.
-            value (any): Pythonic representation of an argument.
-        """
-        self.type_ = type_
-        self.value = value
-
-    def __str__(self) -> str:
-        """
-        String representation of argument.
-
-        Returns:
-            str: String representation in format <Type: ...; Value: ...>
-
-        Example:
-            >>> str(Argument('number', 42))
-            <Type: number; Value: 42>
-        """
-        return f'<Type: {self.type_}; Value: {self.value}>'
-
-    def __repr__(self) -> str:
-        """
-        Simple `__repr__` override.
-
-        Based on `__str__` private method and returns the same.
-        """
-        return self.__str__()
 
     @classmethod
     def fromTree(cls, argument: Tree):
