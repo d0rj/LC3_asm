@@ -3,13 +3,13 @@ import os
 from setuptools import setup, find_packages
 
 
-with open(os.getcwd() + '\\requirements.txt') as file:
+with open(os.getcwd() + '/requirements.txt') as file:
     requires = file.readlines()
 
 if sys.version_info.minor < 7:
     requires.append('dataclasses')
 
-with open(os.getcwd() + '\\README.md', 'r', encoding='utf-8') as file:
+with open(os.getcwd() + '/README.md', 'r', encoding='utf-8') as file:
     long_description = file.read()
 
 setup(
