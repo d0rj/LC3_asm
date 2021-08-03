@@ -1,8 +1,7 @@
 import argparse
 import os
 
-from lc3asm.assembler import process
-from lc3asm.parser import parse
+from lc3asm import process_source
 
 
 def parse_cmd_arguments() -> argparse.Namespace:
@@ -38,8 +37,7 @@ def main() -> None:
     with open(args.path, 'r') as file:
         program = file.read()
 
-    parsed_tree = parse(program)
-    memory = process(parsed_tree)
+    memory = process_source(program)
     byte_memory = bytearray([
         e
         for m in memory

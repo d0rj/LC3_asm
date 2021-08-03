@@ -85,7 +85,7 @@ def assemble(
     return memory
 
 
-def process(tree: Tree) -> list:
+def process(tree: Tree) -> List[int]:
     memory = [0 for _ in range(MEMORY_SIZE)]
 
     if tree.data != 'start':
