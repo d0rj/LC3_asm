@@ -5,6 +5,7 @@
 [![DeepSource](https://deepsource.io/gh/d0rj/LC3_asm.svg/?label=active+issues&show_trend=true&token=3t4Dx4wWstyjQ9XcNnJOS_s6)](https://deepsource.io/gh/d0rj/LC3_asm/?ref=repository-badge)
 
 [![Pytest](https://github.com/d0rj/LC3_asm/actions/workflows/pytest.yaml/badge.svg)](https://github.com/d0rj/LC3_asm/actions/workflows/pytest.yaml)
+[![PyPI Upload](https://github.com/d0rj/LC3_asm/actions/workflows/pypi-publish.yml/badge.svg)](https://pypi.org/project/lc3asm/)
 
 ## Overview
 
