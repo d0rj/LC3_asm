@@ -9,4 +9,3 @@ HALT
 MyText: .stringz "Hello, world!"
 
 .end
-
