@@ -1,2 +1,2 @@
-include grammar/*.lark
+include lc3asm/grammar/*.lark
 include requirements.txt

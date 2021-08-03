@@ -14,7 +14,7 @@ with open(os.getcwd() + '/README.md', 'r', encoding='utf-8') as file:
 
 setup(
     name='lc3asm',
-    version='0.0.1',
+    version='0.0.2',
     author='d0rj',
     python_requires='>=3.6',
     classifiers=[
@@ -36,4 +36,5 @@ setup(
         'grammar': ['grammar/lc3_assembly.lark'],
         'requirements': ['requirements.txt']
     },
+    include_package_data=True,
 )
