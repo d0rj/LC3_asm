@@ -1,7 +1,7 @@
 from typing import List
 
-from lc3asm.parser import parse as _parse
-from lc3asm.assembler import process as _process
+from lc3asm.parsing import parse as _parse
+from lc3asm.assembling import process as _process
 
 
 def process_source(source: str) -> List[int]:
