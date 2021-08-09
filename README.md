@@ -9,23 +9,48 @@
 
 ## Overview
 
-⚠WIP - now it can generate binary code, but can't save it⚠
+⚠ WIP - it has some 🪲🪲 ⚠
 
-Simple asssembler for LC3 virtual machine. You can see my own realization of VM [there](https://github.com/d0rj/LC3_vm).
+Simple asssembler for LC3 virtual machine. You can see my own realization of VM [there](https://github.com/d0rj/LC3_vm) or try good [online simulator](https://wchargin.com/lc3web/).
 
-### Supports
+## How to use
 
-- [x] Instructions
-- [x] All types of arguments for instruction
-- [x] Labels
-- [x] Meta assebler directives (like ***.STRINGZ***)
-- [x] Machine code generation
-- [ ] Advanced label declaration
-- [ ] AST optimization of assembly code
+### Copy
 
-### Dependencies
+```bash
+git clone https://github.com/d0rj/LC3_asm.git
+cd LC3_asm
+```
 
-[Lark package](https://github.com/lark-parser/lark) for easy and pretty [EBNF grammar](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form) parsing and [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) generation.
+### Install dependencies
+
+```bash
+python -m pip install --upgrade pip
+pip install . --use-feature=in-tree-build
+```
+
+### Run tests
+
+```bash
+pip install pytest
+python -m pytest
+```
+
+### Start assembler
+
+```bash
+python main.py -p "./examples/hello_world.asm" -o "./output/my_assambled_programm.bin"
+```
+
+**\-p / --path** - path to assembly programm source file.
+
+**\-o / --out** - path for output binary file.
+
+## Currently not supported
+
+- **.BLKW** pseudo-operation
+- **BR\*** operation and sub-operations (*bug*)
+- Advanced label declaration with address etc.
 
 ## Resources
 
