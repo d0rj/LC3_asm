@@ -12,7 +12,7 @@ _operationEncoder = OperationEncoder()
 def _random_case(string: str) -> str:
     return ''.join(
         c.upper() if randint(1, 10) % 2 == 0 else c.lower()
-        for c in 'hello'
+        for c in string
     )
 
 
@@ -21,8 +21,8 @@ def _encoded_must_be(op: str, args: List[Argument], right: int) -> None:
         op.lower(),
         op.upper(),
         _random_case(op)]
-    assert _operationEncoder[op.upper()](args) == right
-    assert _operationEncoder[op.lower()](args) == right
+    for op_name in op_names:
+        assert _operationEncoder[op_name](args) == right
 
 
 def test_encode_halt():
