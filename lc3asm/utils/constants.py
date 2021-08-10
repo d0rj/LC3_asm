@@ -149,7 +149,7 @@ class Operations(DictEnum):
     BRNZ = BRN | BRZ
     BRNP = BRN | BRP
     BRZP = BRZ | BRP
-    BRZNP = BRN | BRZ | BRP
+    BRNZP = BRN | BRZ | BRP
 
 
 class Registers(DictEnum):

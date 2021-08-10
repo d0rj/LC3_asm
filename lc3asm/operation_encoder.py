@@ -144,8 +144,8 @@ class OperationEncoder:
     def BRZP(self, arguments: List[Argument]) -> int:
         return self._base_BR(arguments, 'brzp')
 
-    def BRZNP(self, arguments: List[Argument]) -> int:
-        return self._base_BR(arguments, 'brznp')
+    def BRNZP(self, arguments: List[Argument]) -> int:
+        return self._base_BR(arguments, 'brnzp')
 
     def NOT(self, arguments: List[Argument]) -> int:
         required_argument_types(
