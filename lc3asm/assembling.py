@@ -65,6 +65,9 @@ def preprocess(
         arguments = [
             Argument(TT.NUMBER, labels[arg.value])
             if arg.type_ == TT.LABEL
+            else Argument(TT.Number, labels[arg.value] - addr)
+                if 'br' in name # for 'br' subops must be PC deltas
+                # TODO: replace by constant
             else arg
             for arg in arguments
         ]
