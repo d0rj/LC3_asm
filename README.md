@@ -49,7 +49,7 @@ python main.py -p "./examples/hello_world.asm" -o "./output/my_assambled_program
 ## Currently not supported
 
 - **.BLKW** pseudo-operation
-- **BR\*** operation and sub-operations (*bug*)
+- **BR\*** label handle (bug)
 - Advanced label declaration with address etc.
 
 ## Resources
