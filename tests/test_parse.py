@@ -14,7 +14,7 @@ def _get_examples_paths() -> List[str]:
 
 def test_parse_examples_passing():
     examples_paths = _get_examples_paths()
-    
+
     assert len(examples_paths) > 0
 
     for example_path in examples_paths:

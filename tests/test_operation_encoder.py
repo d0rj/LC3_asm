@@ -155,3 +155,44 @@ def test_encode_ld():
         ],
         0x2405
     )
+
+
+def _test_encode_br_with_delta(op: str, flag_delta: int):
+    for offset in range(1, 0x1ff + 1):
+        _encoded_must_be(
+            op,
+            [Argument(TT.NUMBER, offset)],
+            offset + flag_delta
+        )
+
+
+def test_encode_br():
+    _test_encode_br_with_delta('br', 0)
+
+
+def test_encode_brn():
+    _test_encode_br_with_delta('brn', 1 << 11)
+
+
+def test_encode_brz():
+    _test_encode_br_with_delta('brz', 1 << 10)
+
+
+def test_encode_brp():
+    _test_encode_br_with_delta('brp', 1 << 9)
+
+
+def test_encode_brnz():
+    _test_encode_br_with_delta('brnz', 0b110 << 9)
+
+
+def test_encode_brnp():
+    _test_encode_br_with_delta('brnp', 0b101 << 9)
+
+
+def test_encode_brzp():
+    _test_encode_br_with_delta('brzp', 0b011 << 9)
+
+
+def test_encode_brnzp():
+    _test_encode_br_with_delta('brnzp', 0b111 << 9)
