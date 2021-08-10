@@ -52,6 +52,7 @@ def preprocess(
                 _bytes = bytearray(bytes(string, 'ascii'))
                 _bytes.append(0x00)
                 memory[current_address:(current_address + len(_bytes))] = _bytes
+                current_address += len(_bytes) - 1
         else:
             raise SyntaxError(f'Unknown command: {command.children[0]}.')
 
@@ -65,9 +66,6 @@ def preprocess(
         arguments = [
             Argument(TT.NUMBER, labels[arg.value])
             if arg.type_ == TT.LABEL
-            else Argument(TT.Number, labels[arg.value] - addr)
-                if 'br' in name # for 'br' subops must be PC deltas
-                # TODO: replace by constant
             else arg
             for arg in arguments
         ]
