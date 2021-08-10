@@ -1,17 +1,17 @@
-start: command+ ".END"i
+start: (_SPACE* command _SPACE*)+ ".END"i _WS*
 
-command: label
-        |instruction
-        |pseudo_op
+command: label _NL*
+        |instruction _NL+
+        |pseudo_op _NL+
 
-label.3: LABEL_NAME ":"
+label.3: LABEL_NAME _SPACE* ":" _SPACE*
 
-instruction.3: INSTRUCTION_NAME arguments?
+instruction.3: INSTRUCTION_NAME _SPACE* (_SPACE arguments)?
 
-pseudo_op.3: PSEUDO_OP_NAME arguments?
+pseudo_op.3: PSEUDO_OP_NAME _SPACE* (_SPACE arguments)?
 
 arguments: argument
-            | argument ("," argument)+
+            | argument (_SPACE* "," _SPACE* argument _SPACE*)+
 
 argument: REGISTER_NAME -> register_name
         | number
@@ -33,12 +33,12 @@ BIN_NUMBER: "0b" ("0"|"1")+
 
 STRING_LITERAL: "\"" /[^\n]*/ "\""
 
-COMMENT: ";" /[^\n]*/ NEWLINE
+COMMENT: ";" /[^\n]*/ _NL
+_SPACE: " "|"\t"
+_WS: _SPACE | _NL
 
 %import common.INT -> DEC_NUMBER
 %import common.HEXDIGIT
-%import common.WS
-%import common.NEWLINE
+%import common.NEWLINE -> _NL
 %import common.WORD
-%ignore WS
 %ignore COMMENT

@@ -1,6 +1,6 @@
 .orig 0x3000
 
-ADD	r5,	r1,	r2
+ADD r5, r1, r2
 brz PrintYes
 
 PrintNo: 
@@ -13,7 +13,7 @@ PrintYes:
 
 HALT
 
-No: .STRINGZ	"No"
-Yes: .STRINGZ	"Y"
+No: .STRINGZ "No"
+Yes: .STRINGZ "Yes"
 
 .end
